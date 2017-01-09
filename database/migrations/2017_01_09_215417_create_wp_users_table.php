@@ -20,7 +20,7 @@ class CreateWpUsersTable extends Migration {
 			$table->string('user_nicename', 50)->default('')->index('user_nicename');
 			$table->string('user_email', 100)->default('')->index('user_email');
 			$table->string('user_url', 100)->default('');
-			$table->dateTime('user_registered')->default('0000-00-00 00:00:00');
+			$table->dateTime('user_registered');
 			$table->string('user_activation_key')->default('');
 			$table->integer('user_status')->default(0);
 			$table->string('display_name', 250)->default('');
@@ -35,7 +35,7 @@ class CreateWpUsersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_users');
+		Schema::drop('users');
 	}
 
 }

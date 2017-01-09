@@ -77,32 +77,6 @@ As a new WordPress user, you should go to <a href="http://api.animadness.dev/wor
                 'post_mime_type' => '',
                 'comment_count' => 0,
             ),
-            2 => 
-            array (
-                'ID' => 3,
-                'post_author' => 1,
-                'post_date' => '2017-01-09 19:24:13',
-                'post_date_gmt' => '0000-00-00 00:00:00',
-                'post_content' => '',
-                'post_title' => 'Auto Draft',
-                'post_excerpt' => '',
-                'post_status' => 'auto-draft',
-                'comment_status' => 'open',
-                'ping_status' => 'open',
-                'post_password' => '',
-                'post_name' => '',
-                'to_ping' => '',
-                'pinged' => '',
-                'post_modified' => '2017-01-09 19:24:13',
-                'post_modified_gmt' => '0000-00-00 00:00:00',
-                'post_content_filtered' => '',
-                'post_parent' => 0,
-                'guid' => 'http://api.animadness.dev/wordpress/?p=3',
-                'menu_order' => 0,
-                'post_type' => 'post',
-                'post_mime_type' => '',
-                'comment_count' => 0,
-            ),
         ));
         
         

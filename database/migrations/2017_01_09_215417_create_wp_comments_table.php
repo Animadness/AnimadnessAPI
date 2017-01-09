@@ -20,8 +20,8 @@ class CreateWpCommentsTable extends Migration {
 			$table->string('comment_author_email', 100)->default('')->index('comment_author_email');
 			$table->string('comment_author_url', 200)->default('');
 			$table->string('comment_author_IP', 100)->default('');
-			$table->dateTime('comment_date')->default('0000-00-00 00:00:00');
-			$table->dateTime('comment_date_gmt')->default('0000-00-00 00:00:00')->index('comment_date_gmt');
+			$table->dateTime('comment_date');
+			$table->dateTime('comment_date_gmt')->index('comment_date_gmt');
 			$table->text('comment_content', 65535);
 			$table->integer('comment_karma')->default(0);
 			$table->string('comment_approved', 20)->default('1');
@@ -41,7 +41,7 @@ class CreateWpCommentsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_comments');
+		Schema::drop('comments');
 	}
 
 }

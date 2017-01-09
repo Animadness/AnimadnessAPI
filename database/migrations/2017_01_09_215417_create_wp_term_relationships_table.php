@@ -29,7 +29,7 @@ class CreateWpTermRelationshipsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_term_relationships');
+		Schema::drop('term_relationships');
 	}
 
 }

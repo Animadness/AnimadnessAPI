@@ -29,7 +29,7 @@ class CreateWpUsermetaTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_usermeta');
+		Schema::drop('usermeta');
 	}
 
 }

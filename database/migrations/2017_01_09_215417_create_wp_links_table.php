@@ -23,7 +23,7 @@ class CreateWpLinksTable extends Migration {
 			$table->string('link_visible', 20)->default('Y')->index('link_visible');
 			$table->bigInteger('link_owner')->unsigned()->default(1);
 			$table->integer('link_rating')->default(0);
-			$table->dateTime('link_updated')->default('0000-00-00 00:00:00');
+			$table->dateTime('link_updated');
 			$table->string('link_rel')->default('');
 			$table->text('link_notes', 16777215);
 			$table->string('link_rss')->default('');
@@ -38,7 +38,7 @@ class CreateWpLinksTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_links');
+		Schema::drop('links');
 	}
 
 }

@@ -29,7 +29,7 @@ class CreateWpCommentmetaTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_commentmeta');
+		Schema::drop('commentmeta');
 	}
 
 }

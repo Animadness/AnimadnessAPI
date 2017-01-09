@@ -29,7 +29,7 @@ class CreateWpTermsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_terms');
+		Schema::drop('terms');
 	}
 
 }

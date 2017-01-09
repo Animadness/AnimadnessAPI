@@ -68,6 +68,8 @@ define('NONCE_SALT',       getenv('WP_NONCE_SALT'));
  */
 $table_prefix  = getenv('DB_PREFIX');
 
+define('UPLOADS', getenv('WP_UPLOADS'));
+
 /**
  * For developers: WordPress debugging mode.
  *

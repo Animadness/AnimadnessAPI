@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TermRelationshipsTableSeeder::class);
         $this->call(TermTaxonomyTableSeeder::class);
         $this->call(UsermetaTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
     }
 }

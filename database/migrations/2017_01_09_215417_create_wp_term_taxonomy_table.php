@@ -32,7 +32,7 @@ class CreateWpTermTaxonomyTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_term_taxonomy');
+		Schema::drop('term_taxonomy');
 	}
 
 }

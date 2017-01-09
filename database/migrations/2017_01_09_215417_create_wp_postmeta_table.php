@@ -29,7 +29,7 @@ class CreateWpPostmetaTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_postmeta');
+		Schema::drop('postmeta');
 	}
 
 }

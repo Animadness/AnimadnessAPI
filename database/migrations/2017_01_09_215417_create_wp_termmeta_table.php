@@ -29,7 +29,7 @@ class CreateWpTermmetaTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('wp_termmeta');
+		Schema::drop('termmeta');
 	}
 
 }
