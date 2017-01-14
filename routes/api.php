@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['prefix' => 'post'], function() {
-    Route::get('/', 'PostController@viewAll');
+Route::group(['prefix' => 'post', 'middleware' => 'cors'], function() {
+    Route::get('/{postsPerPage?}', 'PostController@viewAll');
+    Route::get('/published/{postsPerPage?}', 'PostController@viewPublished');
 });
 
 Route::group(['prefix' => 'user'], function() {
