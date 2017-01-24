@@ -25,6 +25,6 @@ Route::group(['prefix' => 'user'], function() {
     Route::get('/', 'UserController@viewAll');
 });
 
-Route::group(['prefix' => 'anime'], function() {
+Route::group(['prefix' => 'anime', 'middleware' => 'cors'], function() {
     Route::post('approve', 'AnimeController@approve');
 });

@@ -16,10 +16,10 @@ class AnimeController extends Controller
     public function approve(Request $request) {
         // Make Blog Post Draft
         $title = 'Watch '.$request->input('anime', '').' now on Animadness';
-        $post = new Post;
+        $post = $request->input('blog') ? Post::find($request->input('blog')) : new Post;
         $post->post_author = $request->input('author', 1);
         $post->post_type = $request->input('type', 'post');
-        $post->post_status = $request->input('date') ? 'future' : $request->input('status', 'draft');
+        $post->post_status = $request->input('status', 'draft');
         $post->post_title = $request->input('title', $title);
         $post->post_name = $request->input('name', str_replace('.', '-', str_replace(' ', '-', strtolower($title))));
         $post->post_content = $request->input('content') ? urldecode($request->input('content')) : '';
@@ -32,23 +32,25 @@ class AnimeController extends Controller
         // Set Featured Image
         $featuredImage = $this->setFeaturedImage($post->ID, $request->input('image'), str_replace('.', '-', str_replace(' ', '-', strtolower($title))).'-Featured.jpg');
         
-        // Set to Photo Type
-        $termRelation = new TermRelation;
-        $termRelation->object_id = $post->ID;
-        $termRelation->term_taxonomy_id = 2;
-        $termRelation->save();
+        if (!$request->input('blog')) {
+            // Set to Photo Type
+            $termRelation = new TermRelation;
+            $termRelation->object_id = $post->ID;
+            $termRelation->term_taxonomy_id = 2;
+            $termRelation->save();
 
-        // Set Anime Category
-        $termRelation = new TermRelation;
-        $termRelation->object_id = $post->ID;
-        $termRelation->term_taxonomy_id = 6;
-        $termRelation->save();
+            // Set Anime Category
+            $termRelation = new TermRelation;
+            $termRelation->object_id = $post->ID;
+            $termRelation->term_taxonomy_id = 6;
+            $termRelation->save();
 
-        // Set Anime Tag
-        $termRelation = new TermRelation;
-        $termRelation->object_id = $post->ID;
-        $termRelation->term_taxonomy_id = 7;
-        $termRelation->save();
+            // Set Anime Tag
+            $termRelation = new TermRelation;
+            $termRelation->object_id = $post->ID;
+            $termRelation->term_taxonomy_id = 7;
+            $termRelation->save();
+        }
 
         // Format Social Posts
         $snapPost = [
@@ -64,18 +66,26 @@ class AnimeController extends Controller
         // Set Facebook Social Post
         $facebookPost = $snapPost;
         $facebookPost['doFB'] = 1;
-        $postMeta = new PostMeta;
-        $postMeta->post_id = $post->ID;
-        $postMeta->meta_key = 'snapFB';
+        if (!$request->input('blog')) {
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = 'snapFB';
+        } else {
+            $postMeta = PostMeta::where('post_id', $post->ID)->where('meta_key', 'snapFB')->first();
+        }
         $postMeta->meta_value = maybe_serialize([$facebookPost]);
         $postMeta->save();
         
         // Set Google Social Post
         $googlePost = $snapPost;
         $googlePost['doGP'] = 1;
-        $postMeta = new PostMeta;
-        $postMeta->post_id = $post->ID;
-        $postMeta->meta_key = 'snapGP';
+        if (!$request->input('blog')) {
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = 'snapGP';
+        } else {
+            $postMeta = PostMeta::where('post_id', $post->ID)->where('meta_key', 'snapGP')->first();
+        }
         $postMeta->meta_value = maybe_serialize([$googlePost]);
         $postMeta->save();
 
@@ -84,9 +94,13 @@ class AnimeController extends Controller
         $twitterPost['msgFormat'] = $request->input('tweet', '%TITLE%') . "\rhttps://animadness.net/#/anime/".$request->input('id');
         $twitterPost['attchImg'] = 1;
         $twitterPost['doTW'] = 1;
-        $postMeta = new PostMeta;
-        $postMeta->post_id = $post->ID;
-        $postMeta->meta_key = 'snapTW';
+        if (!$request->input('blog')) {
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = 'snapTW';
+        } else {
+            $postMeta = PostMeta::where('post_id', $post->ID)->where('meta_key', 'snapTW')->first();
+        }
         $postMeta->meta_value = maybe_serialize([$twitterPost]);
         $postMeta->save();
 
