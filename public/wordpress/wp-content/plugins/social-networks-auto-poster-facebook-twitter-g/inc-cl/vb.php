@@ -4,12 +4,14 @@ $nxs_snapAvNts[] = array('code'=>'VB', 'lcode'=>'vb', 'name'=>'vBulletin', 'type
 
 if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB extends nxs_snapClassNT { 
   var $ntInfo = array('code'=>'VB', 'lcode'=>'vb', 'name'=>'vBulletin', 'defNName'=>'uName', 'tstReq' => false, 'instrURL'=>'http://www.nextscripts.com/setup-installation-vbulletin-social-networks-auto-poster-wordpress/');    
+  var $defO = array('nName'=>'', 'do'=>'1', 'uName'=>'', 'uPass'=>'', 'vbURL'=>'', 'inclTags'=>'1', 'msgTFormat'=>'%TITLE%', 'msgFormat'=>"%FULLTEXT%");
   
   function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  
-        $ntOptsOut['msgTFormat'] = $ntOpts['vbMsgTFormat']; $ntOptsOut['msgFormat'] = $ntOpts['vbMsgFormat'];  $ntOptsOut['uName'] = $ntOpts['vbUName'];  $ntOptsOut['uPass'] = $ntOpts['vbPass']; 
-        $ntOptsOut['commID'] = $ntOpts['commID'];  $ntOptsOut['ljSrv'] = $ntOpts['ljSrv'];  $ntOptsOut['inclTags'] = $ntOpts['inclTags'];  
-        $ntOptsOut['v'] = NXS_SETV;
+        $ntOptsOut['msgTFormat'] = !empty($ntOpts['vbMsgTFormat'])?$ntOpts['vbMsgTFormat']:''; $ntOptsOut['msgFormat'] = !empty($ntOpts['vbMsgFormat'])?$ntOpts['vbMsgFormat']:'';  
+        $ntOptsOut['uName'] = !empty($ntOpts['vbUName'])?$ntOpts['vbUName']:''; $ntOptsOut['uPass'] = !empty($ntOpts['vbPass'])?$ntOpts['vbPass']:''; 
+        $ntOptsOut['inclTags'] = !empty($ntOpts['inclTags'])?$ntOpts['inclTags']:'';  
+        $ntOptsOut = nxs_arrMergeCheck($ntOptsOut, $this->defO); $ntOptsOut['isUpdd'] = '1'; $ntOptsOut['v'] = NXS_SETV;
       break;
     }
     return !empty($ntOptsOut)?$ntOptsOut:$ntOpts; 
@@ -18,7 +20,7 @@ if (!class_exists("nxs_snapClassVB")) { class nxs_snapClassVB extends nxs_snapCl
   //#### Show Common Settings
   function showGenNTSettings($ntOpts){ $this->nt = $ntOpts; $this->showNTGroup(); return; }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($ii){ $defO = array('nName'=>'', 'do'=>'1', 'uName'=>'', 'uPass'=>'', 'vbURL'=>'', 'inclTags'=>'1', 'msgTFormat'=>'%TITLE%', 'msgFormat'=>"%FULLTEXT%"); $this->showGNewNTSettings($ii, $defO); }
+  function showNewNTSettings($ii){  $this->showGNewNTSettings($ii, $this->defO); }
   //#### Show Unit  Settings  
   function checkIfSetupFinished($options) { return !empty($options['uPass']); }
   function accTab($ii, $options, $isNew=false){ $ntInfo = $this->ntInfo; $nt = $ntInfo['lcode']; $this->elemUserPass($ii, $options['uName'], $options['uPass']); ?>

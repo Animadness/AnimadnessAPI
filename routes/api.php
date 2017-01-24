@@ -16,8 +16,15 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'post', 'middleware' => 'cors'], function() {
     Route::get('/{postsPerPage?}', 'PostController@viewAll');
     Route::get('/published/{postsPerPage?}', 'PostController@viewPublished');
+    Route::post('/', 'PostController@addNewPost');
+    Route::get('term/relationships', 'PostController@termRelationships');
+    Route::get('{id}/meta/{key}', 'PostController@viewMeta');
 });
 
 Route::group(['prefix' => 'user'], function() {
     Route::get('/', 'UserController@viewAll');
+});
+
+Route::group(['prefix' => 'anime'], function() {
+    Route::post('approve', 'AnimeController@approve');
 });

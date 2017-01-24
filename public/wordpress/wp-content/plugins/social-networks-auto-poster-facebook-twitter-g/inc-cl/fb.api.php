@@ -11,58 +11,49 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
       foreach ($options as $ii=>$ntOpts) $out[$ii] = $this->doPostToNT($ntOpts, $message);
       return $out;
     }
-    function doPostToNT($options, $message){ $badOut = array('Warning'=>'', 'Error'=>''); $wprg = array('sslverify'=>false, 'timeout' => 30); 
+    function doPostToNT($options, $message){ $badOut = array('Warning'=>'', 'Error'=>''); $wprg = array('sslverify'=>false, 'timeout' => 30); //prr($options);
       //## Check settings
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
-      if (empty($options['fbAppAuthToken']) && empty($options['atpKey']) && empty($options['uName'])) { $badOut['Error'] = 'No Auth Token Found/Not configured'; return $badOut; }
+      if (empty($options['accessToken']) && empty($options['atpKey']) && empty($options['uName'])) { $badOut['Error'] = 'No Auth Token Found/Not configured'; return $badOut; }
       //## Make Post
+      if (!empty($options['accessToken'])) if (!isset($options['pageAccessToken']) || trim($options['pageAccessToken'])=='') $options['pageAccessToken'] = $options['accessToken'];
       
-      
-      // $facebook = new NXS_Facebook(array( 'appId' => $options['fbAppID'], 'secret' => $options['fbAppSec'], 'cookie' => true )); 
-      if (!empty($options['fbAppAuthToken'])) if (!isset($options['fbAppPageAuthToken']) || trim($options['fbAppPageAuthToken'])=='') $options['fbAppPageAuthToken'] = $options['fbAppAuthToken'];
-      
-      //## Some OLD Format Conversion
-      if (!isset($options['attachType']) && isset($options['fbAttch'])) $options['attachType'] = $options['fbAttch'];
-      if (!isset($options['postType']) && isset($options['fbPostType'])) $options['postType'] = $options['fbPostType'];  $fbPostType = $options['postType']; //## Compatibility with v <3.2
-      if (!isset($options['pgID']) && isset($options['fbPgID'])) $options['pgID'] = $options['fbPgID'];      
-      
-      if ($fbPostType!='I' && $fbPostType!='T') { $url = $message['url']; $flds = array('id'=>$url, 'scrape'=>'true'); sleep(2); }            
-      //## Get URL info.      
-      if ($fbPostType!='I' && $fbPostType!='T' && !empty($options['atchUse']) && $options['atchUse'] == 'F') { 
-        $response =  nxs_remote_post('http://graph.facebook.com', array('body' => $flds, 'sslverify'=>false, 'timeout' => 30 ));      
+      if ($options['postType']!='I' && $options['postType']!='T'){$url=$message['url']; $flds=array('id'=>$url, 'scrape'=>'true', 'access_token'=>$options['accessToken'], 'appsecret_proof'=>hash_hmac('sha256', $options['accessToken'], $options['appSec']), 'method'=>'post', 'limit'=>250); sleep(2); }            
+      //## Get URL info.              
+      if ($options['postType']!='I' && $options['postType']!='T' && !empty($options['attachInfo']) && $options['attachInfo'] == 'F') {
+        $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders(), '',$flds);  $response =  nxs_remote_post('https://graph.facebook.com', $advSet);
         if (is_nxs_error($response)) $badOut['Error'] = "Error(URL-Info): ". print_r($response, true); else { $response = json_decode($response['body'], true);     //  prr($response);     die();
             if (!empty($response['description'])) $message['urlDescr'] = $response['description'];  if (!empty($response['title'])) $message['urlTitle'] =  $response['title'];
             if (!empty($response['site_name'])) $message['siteName'] = $response['site_name']; elseif ($message['siteName']=='') $message['siteName'] = $message['title'];
             if (!empty($response['image'][0]['url'])) $message['imageURL'] = $response['image'][0]['url'];
+            $message['urlCaption'] = '';
         }
-      } // prr($message);
-      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['fbMsgFormat'], $message); 
-      $imgURL = nxs_getImgfrOpt($message['imageURL']); $fbWhere = 'feed'; 
-      $attachType = $options['attachType']; if ($attachType=='1') $attachType = 'A'; else $attachType = 'S';
+      }  //prr($message); die();
+      if (!empty($message['pText'])) $msg = $message['pText']; else $msg = nxs_doFormatMsg($options['msgFormat'], $message); 
+      $imgURL = nxs_getImgfrOpt($message['imageURL']); $fbWhere = 'feed';       
       if ($options['imgUpl']!='2') $options['imgUpl'] = 'T'; else $options['imgUpl'] = 'A';      
-      if (stripos($options['fbURL'], '/groups/')!=false) $options['destType'] = 'gr';
+      if (!empty($options['fbURL']) && stripos($options['fbURL'], '/groups/')!=false) $options['destType'] = 'gr';
       
-      if (!empty($options['destType']) && $options['destType'] == 'pr') $page_id = $options['fbAppAuthUser']; else $page_id = $options['pgID'];        
+      if (!empty($options['destType']) && $options['destType'] == 'pr') $page_id = $options['authUser']; else $page_id = $options['pgID'];        
       $msg = strip_tags($msg); $msg = str_ireplace('&lt;(")','<(")', $msg); //## FB Smiles FIX 3
       if (substr($msg, 0, 1)=='@') $msg = ' '.$msg; // ERROR] couldn't open file fix
       
       //## Own App Post
-      if (!empty($options['fbAppPageAuthToken'])) {
-        if (empty($options['appsecret_proof'])) $options['appsecret_proof'] = hash_hmac('sha256', $options['fbAppPageAuthToken'], $options['fbAppSec']); 
-        $mssg = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'post', 'message'=>$msg);
-        if ($fbPostType=='I' && trim($imgURL)=='') $fbPostType='T';
-        if ($fbPostType=='A' && !(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $message['url']))) { 
-            $badOut['Warning'] = 'Unvalid URL: '.$message['url'].'| Will be posting as text message'; $fbPostType='T'; 
+      if (!empty($options['pageAccessToken'])) {
+        if (empty($options['appsecret_proof'])) $options['appsecret_proof'] = hash_hmac('sha256', $options['pageAccessToken'], $options['appSec']); 
+        $mssg = array('access_token'=>$options['pageAccessToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'post', 'message'=>$msg);
+        if ($options['postType']=='I' && trim($imgURL)=='') $options['postType']='T';
+        if ($options['postType']=='A' && !(preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $message['url']))) { 
+            $badOut['Warning'] = 'Unvalid URL: '.$message['url'].'| Will be posting as text message'; $options['postType']='T'; 
         } 
-        if ($fbPostType=='A' || $fbPostType=='') {
-          if (($attachType=='A' || $attachType=='S')) { $message['urlTitle'] = nsTrnc($message['urlTitle'], 250, " ", "...");
-            $attArr = array('name' => nsTrnc($message['urlTitle'], 250, " ", "..."), 'caption' => $message['siteName'], 'link' =>$message['url'], 'description' => $message['urlDescr']); $mssg = array_merge($mssg, $attArr); ; 
-          }
-          if ($attachType=='A') $mssg['actions'] = json_encode(array('name' => nsTrnc($message['siteName'], 250, " ", "..."), 'link' =>$message['url']));        
+        if ($options['postType']=='A' || $options['postType']=='') { 
+          $message['urlTitle'] = nsTrnc($message['urlTitle'], 250, " ", "...");
+          $attArr = array('name' => nsTrnc($message['urlTitle'], 250, " ", "..."), 'caption' => $message['urlCaption'], 'link' =>$message['url'], 'description' => $message['urlDescr']); $mssg = array_merge($mssg, $attArr); ;           
+          //if ($options['attachType']=='A') $mssg['actions'] = json_encode(array('name' => nsTrnc($message['siteName'], 250, " ", "..."), 'link' =>$message['url']));
           if (trim($imgURL)!='') $mssg['picture'] = $imgURL;  //if (trim($message['videoURL'])!='') $mssg['source'] = $message['videoURL'];        
-        } elseif ($fbPostType=='I') { /* $facebook->setFileUploadSupport(true); */ $fbWhere = 'photos'; $mssg['url'] = $imgURL;  $mssg['caption'] =  $mssg['message']; 
+        } elseif ($options['postType']=='I') { /* $facebook->setFileUploadSupport(true); */ $fbWhere = 'photos'; $mssg['url'] = $imgURL;  $mssg['caption'] =  $mssg['message']; 
           if ($options['imgUpl']=='T') { //## Try to Post to TImeline
-            $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  
+            $aacct = array('access_token'=>$options['pageAccessToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  
             $res = nxs_remote_get( "https://graph.facebook.com/$page_id/albums?".http_build_query($aacct, null, '&'),$wprg); 
             if (is_nxs_error($res) || empty($res['body'])) $badOut['Error'] = ' [ERROR(Albums)] '.print_r($res, true); else {
               $albums = json_decode($res['body'], true);  if (empty($albums)) $badOut['Error'] .= "JSON ERROR (Albums): ".print_r($res, true); else { 
@@ -73,7 +64,7 @@ if (!class_exists("nxs_class_SNAP_FB")) { class nxs_class_SNAP_FB {
           }        
         }  if (!empty($mssg['name']) && function_exists('mb_strcut')) { mb_internal_encoding('UTF-8'); $mssg['name'] = mb_strcut($mssg['name'], 0, 250); }
         //## Actual Post                
-        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere; // prr($destURL);  prr($mssg); //die();
+        $destURL = "https://graph.facebook.com/$page_id/".$fbWhere;  // prr($destURL);  prr($mssg); //die();
         $response = nxs_remote_post( $destURL, array( 'method' => 'POST', 'httpversion' => '1.1', 'timeout' => 30, 'sslverify'=>false, 'redirection' => 0, 'body' => $mssg)); 
       }     
       

@@ -10,7 +10,8 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG extends nxs_snapCl
         if (empty($ntOpts['apiToUse'])) { if (!empty($ntOpts['APIKey'])) $ntOpts['apiToUse'] = 'bg'; if (!empty($ntOpts['bgUName']) && !empty($ntOpts['bgPass'])) $ntOpts['apiToUse'] = 'nx'; } $ntOptsOut['apiToUse'] = $ntOpts['apiToUse'];
         if ($ntOptsOut['apiToUse']=='nx') { $ntOptsOut['uName'] = $ntOpts['bgUName'];  $ntOptsOut['uPass'] = $ntOpts['bgPass'];  } else { $ntOptsOut['appKey'] = $ntOpts['APIKey'];   $ntOptsOut['appSec'] = $ntOpts['APISec']; 
            $ntOptsOut['accessToken'] = $ntOpts['AccessToken']; $ntOptsOut['accessTokenSec'] = $ntOpts['AccessTokenSecret'];  $options['refreshToken'] =  $options['RefreshToken'];  $options['accessTokenExp'] =  $options['AccessTokenExp']; $ntOptsOut['blogInfo'] = $ntOpts['blogInfo']; 
-        } $ntOptsOut['inclTags'] = $ntOpts['bgInclTags']; $ntOptsOut['msgFormat'] = $ntOpts['bgMsgFormat'];  $ntOptsOut['msgTFormat'] = $ntOpts['bgMsgTFormat']; $ntOptsOut['blogInfo'] = $ntOpts['blogInfo']; $ntOptsOut['blogURL'] = $ntOpts['blogURL'];  $ntOptsOut['isUpdd'] = '1'; 
+        } $ntOptsOut['inclTags'] = $ntOpts['bgInclTags']; $ntOptsOut['msgFormat'] = $ntOpts['bgMsgFormat'];  $ntOptsOut['msgTFormat'] = $ntOpts['bgMsgTFormat']; $ntOptsOut['blogInfo'] = $ntOpts['blogInfo']; $ntOptsOut['blogURL'] = $ntOpts['blogURL'];  
+        $ntOptsOut['isUpdd'] = '1'; $ntOptsOut['v'] = NXS_SETV;
       break;
     }
     return !empty($ntOptsOut)?$ntOptsOut:$ntOpts; 
@@ -126,7 +127,7 @@ if (!class_exists("nxs_snapClassBG")) { class nxs_snapClassBG extends nxs_snapCl
     return $optMt;
   }
   
-  function adjPublishWP(&$options, &$message, $postID){ $twMsgFormat = $options['msgFormat']; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 10; //prr($message); prr($options);
+  function adjPublishWP(&$options, &$message, $postID){ 
     if (!empty($postID)) { if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, !empty($options['wpImgSize'])?$options['wpImgSize']:'full');
       if (preg_match("/noImg.\.png/i", $imgURL)) { $imgURL = ''; $isNoImg = true; }
       $message['imageURL'] = $imgURL;

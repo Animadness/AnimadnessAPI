@@ -5,6 +5,9 @@ $nxs_snapAvNts[] = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit', 'type'=>
 if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD extends nxs_snapClassNT { 
   var $ntInfo = array('code'=>'RD', 'lcode'=>'rd', 'name'=>'Reddit', 'defNName'=>'uName', 'tstReq' => false, 'instrURL'=>'http://www.nextscripts.com/setup-installation-reddit-social-networks-auto-poster-wordpress/');    
   
+  var $noFuncMsg = 'Reddit doesn\'t have a built-in API for automated posts yet. <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/snap-api/">library module</a> to be able to publish your content to Reddit.';  
+  function checkIfFunc() { return class_exists('nxsAPI_RD'); }
+  
   function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  
         $ntOptsOut['msgTFormat'] = $ntOpts['rdTitleFormat']; $ntOptsOut['msgFormat'] = $ntOpts['rdTextFormat'];  $ntOptsOut['uName'] = $ntOpts['rdUName'];  $ntOptsOut['uPass'] = $ntOpts['rdPass']; 
@@ -24,7 +27,7 @@ if (!class_exists("nxs_snapClassRD")) { class nxs_snapClassRD extends nxs_snapCl
   function accTab($ii, $options, $isNew=false){ $ntInfo = $this->ntInfo; $nt = $ntInfo['lcode']; $this->elemUserPass($ii, $options['uName'], $options['uPass']);  $p = $options['uPass'];
       if (!empty($p)) { $p = (substr($p, 0, 5)=='n5g9a'||substr($p, 0, 5)=='g9c1a'||substr($p, 0, 5)=='b4d7s')?nsx_doDecode(substr($p, 5)):$p; $options['uPass'] = 'g9c1a'.nsx_doEncode($p); $tPST = (!empty($_POST))?$_POST:''; 
       $_POST['rdSR'] = $options['rdSubReddit']; $_POST['u'] = $options['uName']; $_POST['p'] = $p; $_POST['ii'] = $ii; 
-      $opNm = 'nxs_snap_rd_'.sha1('nxs_snap_rd'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) $opVal = $this->getListOfSubReddits($options); 
+      $opNm = 'nxs_snap_rd_'.sha1('nxs_snap_rd'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) { $ntw[$nt][$ii]=$options; $opVal = $this->getListOfSubReddits($ntw); }
       if (!empty($opVal) & !is_array($opVal)) $options['uMsg'] = $opVal; else { if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); } $_POST = $tPST;
     } ?>
     

@@ -58,7 +58,7 @@ class nsx_LinkedIn {
     $url = $request->to_url(); // echo "==========";
     $response = $this->httpRequest($url, $headers, "GET"); //prr($request);
     parse_str($response, $response_params); // prr($response_params);
-    if($debug) {
+    if($this->debug) {
       echo $response . "\n";
     }
     $this->access_token = new nsx_trOAuthConsumer($response_params['oauth_token'], $response_params['oauth_token_secret'], 1);
@@ -74,7 +74,7 @@ class nsx_LinkedIn {
     // $auth_header = preg_replace("/Authorization\: OAuth\,/", "Authorization: OAuth ", $auth_header);
     // # Make sure there is a space between OAuth attribute
     // $auth_header = preg_replace('/\"\,/', '", ', $auth_header);
-    if ($debug) {
+    if ($this->debug) {
       echo $auth_header;
     }
     // $response will now hold the XML document
@@ -87,10 +87,13 @@ class nsx_LinkedIn {
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "POST", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com"); 
-    $toPost = array('comment'=>htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8"), 'visibility'=>array('code'=>'anyone'), 'content'=>array('title'=>htmlspecialchars($title, ENT_NOQUOTES, "UTF-8"), 'submitted-url'=>$url, 'description'=>htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8")));
-    if (!empty($imgURL)) $toPost['content']['submitted-image-url'] = $imgURL;  $toPost = json_encode($toPost); $hdrsArr['Content-Type']='application/json'; $hdrsArr['x-li-format']='json';    
+    $toPost = array('comment'=>htmlspecialchars($msg, ENT_NOQUOTES, "UTF-8"), 'visibility'=>array('code'=>'anyone')); 
+    if (!empty($url)) $toPost['content'] = array('submitted-url'=>$url, 'title'=>htmlspecialchars($title, ENT_NOQUOTES, "UTF-8"), 'description'=>htmlspecialchars($dsc, ENT_NOQUOTES, "UTF-8"));
+    if (!empty($imgURL)) $toPost['content']['submitted-image-url'] = $imgURL;  
+    $toPost = json_encode($toPost); $hdrsArr['Content-Type']='application/json'; $hdrsArr['x-li-format']='json';    
     $auth_header .=  "\n".'Content-Type: application/json'."\n".'x-li-format: json';
     //if ($debug) echo $auth_header . "\n"; 
+    //prr($toPost);
     $response = $this->httpRequest($status_url, $auth_header, "POST", $toPost); $response = json_decode($response, true);
     return $response;
   }
@@ -103,7 +106,7 @@ class nsx_LinkedIn {
     $request = nsx_trOAuthRequest::from_consumer_and_token($this->consumer, $this->access_token, "PUT", $status_url);
     $request->sign_request($this->signature_method, $this->consumer, $this->access_token);
     $auth_header = $request->to_header("https://api.linkedin.com");
-    if ($debug) {
+    if ($this->debug) {
       echo $auth_header . "\n";
     }
     $response = $this->httpRequest($status_url, $auth_header, "PUT", $xml); // prr($response);

@@ -264,7 +264,8 @@
                                     <option value="uz"><?php _e('Uzbekistan', _SQ_PLUGIN_NAME_); ?> (http://www.google.uz/)</option>
                                     <option value="vu"><?php _e('Vanuatu', _SQ_PLUGIN_NAME_); ?> (http://www.google.vu/)</option>
                                     <option value="co.ve"><?php _e('Venezuela', _SQ_PLUGIN_NAME_); ?> (http://www.google.co.ve/)</option>
-                                </select>
+                                    <option value="com.vn"><?php _e('Vietnam', _SQ_PLUGIN_NAME_); ?> (http://www.google.com.vn/)</option>
+                                    </select>
                             </div>
                             <p>
                                 <span><?php echo sprintf(__('Select how many pages to be checked by google rank every hour. %s5 pages (recommended)%s', _SQ_PLUGIN_NAME_), '<br /><span style="color:#aaa;font-size:12px;">', '</span>'); ?></span>

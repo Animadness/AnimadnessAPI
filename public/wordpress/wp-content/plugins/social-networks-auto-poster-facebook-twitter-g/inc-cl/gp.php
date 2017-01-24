@@ -27,13 +27,12 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP extends nxs_snapCl
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  
         $ntOptsOut['msgFormat'] = $ntOpts['gpMsgFormat']; $ntOptsOut['uName'] = $ntOpts['gpUName'];  $ntOptsOut['uPass'] = $ntOpts['gpPass']; 
         $ntOptsOut['pageID'] = $ntOpts['gpPageID']; $ntOptsOut['postType'] = $ntOpts['postType'];
-        $ntOptsOut['commID'] = $ntOpts['gpCommID']; $ntOptsOut['commCat'] = $ntOpts['gpCCat'];
-        $ntOptsOut['isUpdd'] = '1';       
+        $ntOptsOut['commID'] = $ntOpts['gpCommID']; $ntOptsOut['commCat'] = $ntOpts['gpCCat'];        
       case 350: 
         if (empty($ntOptsOut['postTo'])) $ntOptsOut['postTo'] = !empty($ntOptsOut['commID']) ? 'c'.$ntOptsOut['commID'] : 'p'; 
         if (empty($ntOptsOut['postAs'])) $ntOptsOut['postAs'] = !empty($ntOptsOut['pageID']) ? $ntOptsOut['pageID'] : 'p';
        // unset($ntOptsOut['pageID']); unset($ntOptsOut['commID']); unset($ntOptsOut['ck']);  unset($ntOptsOut['commCatsList']);    //          
-        $ntOptsOut['v'] = NXS_SETV;
+        $ntOptsOut['isUpdd'] = '1'; $ntOptsOut['v'] = NXS_SETV;
       break;
     }
     return !empty($ntOptsOut)?$ntOptsOut:$ntOpts; 
@@ -48,13 +47,13 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP extends nxs_snapCl
   function accTab($ii, $options, $isNew=false){ // $options['v']='340'; $options = $this->toLatestVer($options);
     $ntInfo = $this->ntInfo; $nt = $ntInfo['lcode']; $p = $options['uPass']; $this->elemUserPass($ii, $options['uName'], $p); //prr($options['postTo'], 'POST TO');  prr($options['postAs'], 'POST AS'); // prr($options);
     if (!empty($p)) { $p = (substr($p, 0, 5)=='n5g9a'||substr($p, 0, 5)=='g9c1a'||substr($p, 0, 5)=='b4d7s')?nsx_doDecode(substr($p, 5)):$p; $options['uPass'] = 'g9c1a'.nsx_doEncode($p); $tPST = (!empty($_POST))?$_POST:''; 
-      $_POST['pg'] = $options['postTo']; $_POST['pstAs'] = $options['postAs']; $_POST['u'] = $options['uName']; $_POST['p'] = $p; $_POST['ii'] = $ii; 
-      $opNm = 'nxs_snap_gp_'.sha1('nxs_snap_gp'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) $opVal = $this->getListOfPages($options); 
+      $_POST['pg'] = $options['postTo']; $_POST['pstAs'] = $options['postAs']; $_POST['u'] = $options['uName']; $_POST['p'] = $p; $_POST['ii'] = $ii; $ntw[$nt][$ii]=$options;
+      $opNm = 'nxs_snap_gp_'.sha1('nxs_snap_gp'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) $opVal = $this->getListOfPages($ntw); 
       if (!empty($opVal) & !is_array($opVal)) $options['uMsg'] = $opVal; else { if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal);
         $opNm = 'nxs_snap_gp_wh'.sha1('nxs_snap_gpwh'.$options['uName'].$options['uPass'].$options['postAs']); $opVal = nxs_getOption($opNm); 
-        if (empty($opVal)) $opVal = $this->getListWhereToPost($options); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); // prr($opVal, 'opVal:');
+        if (empty($opVal)) $opVal = $this->getListWhereToPost($ntw); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); // prr($opVal, 'opVal:');
         if (substr($options['postTo'],0,1)=='c') { $opNm = 'nxs_snap_gp_cl_'.sha1('nxs_snap_gpcl'.$options['uName'].$options['uPass'].$options['postTo']); $opVal = nxs_getOption($opNm); 
-          if (empty($opVal)) $opVal = $this->getGPCommInfo($options); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); // prr($opVal, 'opVal:');
+          if (empty($opVal)) $opVal = $this->getGPCommInfo($ntw); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); // prr($opVal, 'opVal:');
         }
       } $_POST = $tPST;
     }  if (empty($options['postAsNm']) && !empty($options['postAs']) && $options['postAs']!='p') $options['postAsNm'] = 'Page. ID:'.$options['postAs'].')';
@@ -70,7 +69,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP extends nxs_snapCl
             ?><option <?php if (empty($options['postAs'])) echo 'selected="selected"' ?> value="p"><?php _e('Profile'); ?></option><?php 
               if (!empty($options['postAs'])) { $pgi = str_ireplace('selected="selected" ','',$pgi); $pgi = str_ireplace('value="'.$options['postAs'].'"','selected="selected" value="'.$options['postAs'].'"',$pgi); } echo $pgi;
             ?><option value="a"><?php _e('.... Enter the Page ID'); ?></option>
-          </select><input type="hidden" id="gpPostAsNm<?php echo $ii; ?>" name="gp[<?php echo $ii;?>][postAsNm]" value="<?php echo $options['postAsNm']; ?>"><div id="nxsGPInfoDivBlock<?php echo $ii; ?>" style="display: inline-block;"> <input type="text" style="display: none;" id="gpPstAsCst<?php echo $ii; ?>" value="<?php echo $options['postAs']; ?>" class="nxs_gpPgIDcst" data-tid="gpPostAs<?php echo $ii; ?>" />         
+          </select><input type="hidden" id="gpPostAsNm<?php echo $ii; ?>" name="gp[<?php echo $ii;?>][postAsNm]" value="<?php echo $options['postAsNm']; ?>"><div id="nxsGPInfoDivBlock<?php echo $ii; ?>" style="display: inline-block;"> <input type="text" style="display: none;" id="gpPstAsCst<?php echo $ii; ?>" value="<?php echo $options['postAs']; ?>" onchange="nxs_InpToDDChange(jQuery(this));" data-tid="gpPostAs<?php echo $ii; ?>" />         
           <div style="display: inline-block;"><a onclick="nxs_gpGetAllInfo(<?php echo $ii;?>, 1); jQuery(this).blur(); return false;" href="#"><img id="<?php echo $nt.$ii;?>rfrshImg" style="vertical-align: middle;" src='<?php echo NXS_PLURL; ?>img/refresh16.png' /></a></div></div> <img id="<?php echo $nt.$ii;?>ldImg" style="display: none;vertical-align: middle;" src='<?php echo NXS_PLURL; ?>img/ajax-loader-sm.gif' />
           </div>          
           </div>                                                    
@@ -86,7 +85,7 @@ if (!class_exists("nxs_snapClassGP")) { class nxs_snapClassGP extends nxs_snapCl
             ?><option <?php if (empty($options['postTo']) || $options['postTo']=='p') echo 'selected="selected"' ?> value="p"><?php echo (!empty($options['postAsNm'])&& $options['postAs']!='p')?$options['postAsNm']:__('Profile'); ?></option><?php 
               if (!empty($options['postTo'])) { $pgi = str_ireplace('selected="selected" ','',$pgi); $pgi = str_ireplace('value="'.$options['postTo'].'"','selected="selected" value="'.$options['postTo'].'"',$pgi); } echo $pgi;
             ?><option value="a"><?php _e('.... Enter the Collection or Community ID'); ?></option>
-          </select><div id="nxsGPInfoDivBlock<?php echo $ii; ?>" style="display: inline-block;"> <input type="text" style="display: none;" id="gpPgIDcst<?php echo $ii; ?>" value="<?php echo $options['postTo']; ?>" class="nxs_gpPgIDcst" data-tid="gpWhToPost<?php echo $ii; ?>" /> </div> 
+          </select><div id="nxsGPInfoDivBlock<?php echo $ii; ?>" style="display: inline-block;"> <input type="text" style="display: none;" id="gpPgIDcst<?php echo $ii; ?>" value="<?php echo $options['postTo']; ?>" onchange="nxs_InpToDDChange(jQuery(this));" data-tid="gpWhToPost<?php echo $ii; ?>" /> </div> 
           </div>          
           </div>                                          
           <div id="nxsGPMsgDiv<?php echo $ii; ?>"><?php if (!empty($options['uMsg'])) echo $options['uMsg']; ?><?php if ($isNew) { ?><?php _e('Please enter your login/password to see the list of your pages, collections, and communities', 'nxs_snap'); ?><?php } ?></div>  

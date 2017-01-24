@@ -62,15 +62,20 @@ if (!class_exists("nxs_class_SNAP_FP")) { class nxs_class_SNAP_FP {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['uPass']) || trim($options['uPass'])=='') { $badOut['Error'] = 'Not Authorized'; return $badOut; }      
       if (empty($options['imgSize'])) $options['imgSize'] = '';
+      //## Get Saved Login Info
+      if (function_exists('nxs_getOption')) { $opVal = array(); $opNm = 'nxs_snap_fp_'.sha1('nxs_snap_fp'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); } 
       //## Format Post
-      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFrmt'], $message); 
+      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFormat'], $message); 
       //## Make Post            
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';
       //## Make Post   
-      if (!empty($options['ck'])) $ck = maybe_unserialize($options['ck']); else $ck='';  $pass = substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'];       
+      $pass = (substr($options['uPass'], 0, 5)=='n5g9a'||substr($options['uPass'], 0, 5)=='g9c1a'||substr($options['uPass'], 0, 5)=='b4d7s')?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'];  
       $nt = new nxsAPI_FP(); $nt->debug = false; if (!empty($ck)) $nt->ck = $ck; if (!empty($options['proxy'])&&!empty($options['proxyOn'])){ $nt->proxy['proxy'] = $options['proxy']['proxy']; if (!empty($options['proxy']['up'])) $nt->proxy['up'] = $options['proxy']['up'];};
-      $loginErr = $nt->connect($options['uName'], $pass); if ($loginErr) { $badOut['Error'] .= 'Can\'t Connect - '.print_r($loginErr, true); return $badOut; } $options['ck'] = $nt->ck; if (function_exists('nxs_save_glbNtwrks')) nxs_save_glbNtwrks('fp', $options['ii'], $nt->ck, 'ck');         
-      $post = array('url'=>$message['url'], 'mgzURL'=>$options['mgzURL'], 'imgURL'=>$imgURL, 'text'=>$text ); $ret = $nt->post($post); return $ret;
+      $loginErr = $nt->connect($options['uName'], $pass); if ($loginErr) { $badOut['Error'] .= 'Can\'t Connect - '.print_r($loginErr, true); return $badOut; }             
+      $post = array('url'=>$message['url'], 'mgzURL'=>$options['mgzURL'], 'imgURL'=>$imgURL, 'text'=>$text ); $ret = $nt->post($post); 
+      //## Save Login Info
+      if (function_exists('nxs_saveOption')) { if (empty($opVal['ck'])) $opVal['ck'] = ''; if (is_array($ret) && $ret['isPosted']=='1' && $opVal['ck'] != $nt->ck) { $opVal['ck'] = $nt->ck; nxs_saveOption($opNm, $opVal); } }            
+      return $ret;
     }      
 }}
 ?>

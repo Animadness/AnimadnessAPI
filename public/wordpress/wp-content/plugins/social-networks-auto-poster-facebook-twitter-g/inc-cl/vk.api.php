@@ -13,15 +13,13 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
     }    
     function nxs_uplImgtoVK($imgURL, $options){
       $postUrl = 'https://api.vk.com/method/photos.getWallUploadServer?gid='.(str_replace('-','',$options['pgIntID'])).'&access_token='.$options['appAuthToken'];
-      $response = nxs_remote_get($postUrl); $thumbUploadUrl = $response['body'];    
+      $response = nxs_remote_get($postUrl);  if(is_nxs_error($response)) return "Error: URL:".$postUrl." | ". print_r($response, true); $thumbUploadUrl = $response['body'];    
       if (!empty($thumbUploadUrl)) { $thumbUploadUrlObj = json_decode($thumbUploadUrl); $VKuploadUrl = $thumbUploadUrlObj->response->upload_url; }   // prr($thumbUploadUrlObj); echo "UURL=====-----";
       if (!empty($VKuploadUrl)) {    
         // if (stripos($VKuploadUrl, '//pu.vkontakte.ru/c')!==false) { $c = 'c'.CutFromTo($VKuploadUrl, '.ru/c', '/'); $VKuploadUrl = str_ireplace('/pu.','/'.$c.'.',str_ireplace($c.'/','',$VKuploadUrl)); }
         $remImgURL = urldecode($imgURL); $urlParced = pathinfo($remImgURL); $remImgURLFilename = $urlParced['basename']; $imgData = nxs_remote_get($remImgURL); 
         if(is_nxs_error($imgData) || empty($imgData['body']) || (!empty($imgData['headers']['content-length']) && (int)$imgData['headers']['content-length']<200) || 
-          $imgData['headers']['content-type'] == 'text/html' ||  $imgData['response']['code'] == '403' ) { $options['attchImg'] = 0; 
-            nxs_addToLogN('E','Error',$logNT,'Could not get image ( '.$remImgURL.' ), will post without it - ', print_r($imgData, true)); return 'Image Upload Error, please see log';
-        } $imgData = $imgData['body'];        
+          $imgData['headers']['content-type'] == 'text/html' ||  $imgData['response']['code'] == '403' ) return 'Could not get image ( '.$remImgURL.' ), will post without it - '.print_r($imgData, true); else $imgData = $imgData['body'];        
         
         $tmp=array_search('uri', @array_flip(stream_get_meta_data($GLOBALS[mt_rand()]=tmpfile())));  
         if (!is_writable($tmp)) return "Your temporary folder or file (file - ".$tmp.") is not writable. Can't upload image to VK";
@@ -40,7 +38,7 @@ if (!class_exists("nxs_class_SNAP_VK")) { class nxs_class_SNAP_VK {
       
         if (!empty($uploadResultObj->server) && !empty($uploadResultObj->photo) && !empty($uploadResultObj->hash)) {
           $postUrl = 'https://api.vk.com/method/photos.saveWallPhoto?server='.$uploadResultObj->server.'&photo='.$uploadResultObj->photo.'&hash='.$uploadResultObj->hash.'&gid='.(str_replace('-','',$options['pgIntID'])).'&access_token='.$options['appAuthToken'];
-          $response = nxs_remote_get($postUrl);            
+          $response = nxs_remote_get($postUrl);  if(is_nxs_error($response)) return "Error: URL:".$postUrl." | ". print_r($response, true);          
           $resultObject = json_decode($response['body']); //prr($resultObject);
           if (isset($resultObject) && isset($resultObject->response[0]->id)) { return $resultObject->response[0]; } else { return 'Image Upload Error'; }
         }

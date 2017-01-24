@@ -1,5 +1,5 @@
 <?php
-if (!function_exists("nxs_snapAjax")) { function nxs_snapAjax() { check_ajax_referer('nxsSsPageWPN'); $arg = ''; nxs_Filters::init(true);
+if (!function_exists("nxs_snapAjax")) { function nxs_snapAjax() { check_ajax_referer('nxsSsPageWPN'); $arg = ''; nxs_Filters::init(true); //echo "Hera?"; die();
   global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options; $networks = $options;
   
   if (get_magic_quotes_gpc() || (!empty($_POST['nxs_mqTest']) && $_POST['nxs_mqTest']=="\'")) {array_walk_recursive($_POST, 'nsx_stripSlashes');}  array_walk_recursive($_POST, 'nsx_fixSlashes');  unset($_POST['nxs_mqTest']); 
@@ -72,7 +72,7 @@ if (!function_exists("nsFormatMessage")) { function nsFormatMessage($msg, $postI
   if (preg_match('/%URL%/', $msg)) { $oo=array(); $oo = nxs_getURL($oo, $postID, $addURLParams); $url = $oo['urlToUse']; $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%URL%", $url, $msg);}
   if (preg_match('/%SLUG%/', $msg)) { $msg = str_ireplace("%SLUG%", $post->post_name, $msg); }
   if (preg_match('/%MYURL%/', $msg)) { $url =  get_post_meta($postID, 'snap_MYURL', true); if($addURLParams!='') $url .= (strpos($url,'?')!==false?'&':'?').$addURLParams;  $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%MYURL%", $url, $msg);}// prr($msg);
-  if (preg_match('/%SURL%/', $msg)) { $oo=array(); $oo = nxs_getURL($oo, $postID, $addURLParams); $url = $oo['urlToUse']; $url = nxs_mkShortURL($url, $postID); $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);} 
+  if (preg_match('/%SURL%/', $msg)) { $oo=array(); $oo = nxs_getURL($oo, $postID, $addURLParams); $url = $oo['urlToUse']; $url = nxs_mkShortURL($url, $postID); $nxs_urlLen = nxs_strLen($url); $msg = str_ireplace("%SURL%", $url, $msg);  } 
   if (preg_match('/%ORID%/', $msg)) { $msg = str_ireplace("%ORID%", $postID, $msg); } 
   if (preg_match('/%IMG%/', $msg)) { $imgURL = nxs_getPostImage($postID, !empty($ntOpts['wpImgSize'])?$ntOpts['wpImgSize']:'full'); $msg = str_ireplace("%IMG%", $imgURL, $msg); } 
   if (preg_match('/%TITLE%/', $msg)) { $title = nxs_doQTrans($post->post_title, $lng); $msg = str_ireplace("%TITLE%", $title, $msg); }                    
@@ -315,8 +315,7 @@ if (!function_exists("nxs_memCheck")) { function nxs_memCheck() { global $nxs_sn
     <div><strong><?php _e('PHP Version'); ?></strong>: <span><?php echo PHP_VERSION; ?>;&nbsp;</span>
       <strong><?php _e('Memory limit'); ?></strong>: <span><?php echo $mLimit; ?>; &nbsp;</span>
       <strong><?php _e('Memory usage'); ?></strong>: <span><?php echo $mUsage; ?>; &nbsp;</span> <strong><?php _e('Memory peak usage'); ?></strong>: <span><?php echo $mUsageP; ?>; &nbsp;</span>
-      &nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=test">Check HTTPS/SSL</a>
-      &nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=crtest">Show Cron Test Results</a>
+      <br/><a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=test">[Test Connections and HTTPS/SSL]</a>&nbsp;&nbsp;<a target="_blank" href="<?php echo $nxs_snapThisPageUrl; ?>&do=crtest">[Show Cron Test Results]</a>
     </div> <?php
 }}
 //## Check SSL Sec
@@ -345,6 +344,22 @@ if (!function_exists("nxs_mkRemOptsArr")) {function nxs_mkRemOptsArr($hdrsArr, $
   if (empty($hdrsArr)) $hdrsArr = array('headers'=>array('Referer'=>'http://'.$_SERVER['HTTP_HOST'], 'User-Agent'=>$ua)); $a = array('headers' => $hdrsArr, 'httpversion' => '1.1', 'timeout' => $timt, 'redirection' => $rdr, 'sslverify'=>$sslverify, 'user-agent'=>$ua); 
   if (!empty($flds)) $a['body'] = $flds; if (!empty($p)) $a['proxy'] = $p;  if (!empty($ck)) $a['cookies'] = $ck; return $a;
 }}
+
+if (!function_exists('nxsMergeArraysOV')){function nxsMergeArraysOV($Arr1, $Arr2){
+  foreach($Arr2 as $key => $value) { if(array_key_exists($key, $Arr1) && is_array($value)) $Arr1[$key] = nxsMergeArraysOV($Arr1[$key], $Arr2[$key]); else $Arr1[$key] = $value;} return $Arr1;
+}}
+if (!function_exists('nxs_MergeCookieArr')){function nxs_MergeCookieArr($ArrO, $ArrN){ $namesArr = array(); foreach($ArrO as $key => $value) { if (is_object($value)) $namesArr[$key] = $value->name; }             
+  foreach($ArrN as $key => $value) { if (is_object($value) && $value->value!='deleted') { $isEx = array_search($value->name, $namesArr); if ($isEx===false) $ArrO[] = $value; else $ArrO[$isEx] = $value;}} return $ArrO;
+}}
+if (!function_exists('nxs_altCurlProxy')){ function nxs_altCurlProxy( $ch, $r='' ){ if (empty($r['proxy'])) return; curl_setopt($ch, CURLOPT_PROXY, $r['proxy']['proxy']);  
+  if (!empty($r['proxy']['up'])) curl_setopt($ch, CURLOPT_PROXYUSERPWD, $r['proxy']['up']); if (!empty($r['proxy']['proxys5']))  curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+}}
+if (!function_exists('nxs_getCKVal')){ function nxs_getCKVal($name, $ck) { foreach ($ck as $c) if ($c->name==$name) return($c->value); return false; } }
+if (!function_exists('nxsClnCookies')){ function nxsClnCookies($ck) { $ckOut = array(); $t =time(); foreach ($ck as $c) { if ($c->value!='deleted' && $c->value!='deleteMe' && $c->value!='delete me' && $c->value!='"delete me"' && (empty($c->expires) || $c->expires>$t)) $ckOut[] = $c; } return $ckOut; }}
+if (!function_exists('nxsLeaveOnlyCookies')){ function nxsLeaveOnlyCookies($ck, $lv) { $ckOut = array(); foreach ($ck as $c) { if (in_array($c->name, $lv)) $ckOut[] = $c; } return $ckOut; }}
+if (!function_exists('nxsDelCookie')){ function nxsDelCookie($ck, $dc) { $ckOut = array(); foreach ($ck as $c) if ($c->name!=$dc) $ckOut[] = $c; return $ckOut; }}
+
+
 if (!function_exists("nxs_show_noLibWrn")) {function nxs_show_noLibWrn($msg){ ?> <div style="border: 2px solid darkred; padding: 25px 15px 15px 15px; margin: 3px; background-color: #fffaf0;"> 
             <span style="font-size: 16px; color:darkred;"><?php echo $msg ?></span>&nbsp;<a href="http://www.nextscripts.com/faq/third-party-libraries-autopost-google-pinterest/" target="_blank">More info about third party libraries.</a><br/><hr/> <div style="font-size: 16px; color:#005800; font-weight: bold; margin-top: 12px; margin-bottom: 7px;">You can get API library from NextScripts.</div>
             <div style="padding-bottom: 5px;"><a href="http://www.nextscripts.com/snap-api/">SNAP API Libarary</a> adds autoposting to:</div> <span class="nxs_txtIcon nxs_ti_gp">Google+</span>, <span class="nxs_txtIcon nxs_ti_pn">Pinterest</span>, <span class="nxs_txtIcon nxs_ti_bg">Instagram</span>, <span class="nxs_txtIcon nxs_ti_rd">Reddit</span>, &nbsp;&nbsp;<span class="nxs_txtIcon nxs_ti_yt">YouTube</span>,&nbsp;&nbsp;<span class="nxs_txtIcon nxs_ti_fp">Flipboard</span>, <span class="nxs_txtIcon nxs_ti_li">LinkedIn Company Pages and Groups</span><br><br>          
@@ -367,11 +382,10 @@ if (!function_exists("nxs_save_ntwrksOpts")) { function nxs_save_ntwrksOpts($net
 }}
 
 if (!function_exists("nxs_saveOption")) { function nxs_saveOption($optName, $val) { 
-  if (function_exists('nxs_settings_save') && function_exists('nxs_settings_open')) { $n = nxs_settings_open(); if (!empty($n) && is_array($n)) $n['_opts'][$optName] = $val; nxs_settings_save($n); } else if (function_exists('get_option')) update_option($optName, $val); 
+  if (function_exists('nxs_settings_save') && function_exists('nxs_settings_open')) { $n = nxs_settings_open(); if (!empty($n) && is_array($n)) $n['_opts'][$optName] = $val; nxs_settings_save($n); } else if (function_exists('get_option')) update_option($optName, $val, false); 
 }}
 if (!function_exists("nxs_getOption")) { function nxs_getOption($optName) { $val = '';
-  if (function_exists('nxs_settings_open')) { $n = nxs_settings_open(); if (!empty($n) && !empty($n['_opts']) && !empty($n['_opts'][$optName])) $val = $n['_opts'][$optName]; } else if (function_exists('get_option')) $val = get_option($optName); 
-  return maybe_unserialize($val);
+  if (function_exists('nxs_settings_open')) { $n = nxs_settings_open(); if (!empty($n) && !empty($n['_opts']) && !empty($n['_opts'][$optName])) $val = $n['_opts'][$optName]; } else if (function_exists('get_option')) $val = get_option($optName);  return maybe_unserialize($val);
 }}
 
 function nxs_toolbar_link_to_mypage( $wp_admin_bar ) { return;
@@ -401,6 +415,8 @@ if (!function_exists("nxs_save_yo_profile_fields")) { function nxs_save_yo_profi
 if (!function_exists("nxs_add_array_sort")) {  function nxs_add_array_sort($a, $b){ $c = array('Social Networks'=>1, 'Blogs/Publishing Platforms'=>2, 'Link Sharing/Boormarks'=>3, 'Email Marketing'=>4, 'Messengers'=>5,  'Image Sharing'=>6,  'Forums'=>7, 'Other'=>8);
     return $c[$a]>$c[$b] ? 1: -1;
 }}
+
+if (!function_exists("nxs_arrMergeCheck")) { function nxs_arrMergeCheck($a1, $a2){ foreach ($a2 as $ak=>$a) if (!in_array($ak, array_keys($a1))) $a1[$ak] = $a; return $a1; }}
 
 //## Delete Account
 if (!function_exists("ns_delNT_ajax")) { function ns_delNT_ajax(){ check_ajax_referer('nxsSsPageWPN'); $indx = (int)$_POST['id']; 
@@ -476,7 +492,7 @@ if (!function_exists("nxs_getShowLog")) { function nxs_getShowLog() { $logInfo =
 //## Upload image as file from URL to remote server
 if (!function_exists('nxs_altCurlUploadImg')){ function nxs_altCurlUploadImg( $ch, $r ){ $pstArray = unserialize($r['headers']['nxsPstArr']); $tmp = $r['headers']['nxsUplFile']; $fld = $r['headers']['nxsPstField'];
     unset($r['headers']['nxsPstArr']); unset($r['headers']['nxsUplFile']); unset($r['headers']['nxsPstField']);    
-    if (function_exists('curl_file_create')) $file  = curl_file_create($tmp); else $file = '@'.$tmp;  $pstArray[$fld] = $file; $r['body'] = http_build_query($pstArray);  
+    if (function_exists('curl_file_create')) $file  = curl_file_create($tmp); else $file = '@'.$tmp;  $pstArray[$fld] = $file; $r['body'] = http_build_query($pstArray);  // prr($pstArray);
     if ( !empty( $r['headers'] ) ) { $headers = array(); foreach ( $r['headers'] as $name => $value ) if ($name!=='Content-Length')  $headers[] = "{$name}: $value"; curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );}
     curl_setopt($ch, CURLOPT_POST, TRUE); curl_setopt($ch, CURLOPT_POSTFIELDS, $pstArray); return array('ch'=>$ch, 'r'=>$r);
 }}
@@ -489,11 +505,20 @@ if (!function_exists('nxs_curlUploadImg')){ function nxs_curlUploadImg($imgURL, 
   $tmpX=array_search('uri', @array_flip(stream_get_meta_data($GLOBALS[mt_rand()]=tmpfile()))); if (!is_writable($tmpX)) return array('err'=>"Your temporary folder or file (file - ".$tmpX.") is not writable. Can't upload image to IG");
   rename($tmpX, $tmpX.='.'.$imgType);  register_shutdown_function(create_function('', "@unlink('{$tmpX}');")); file_put_contents($tmpX, $imgData);  
   $hdrsArr['Content-type'] = 'multipart/form-data'; $hdrsArr['nxsUplFile'] = $tmpX; $hdrsArr['nxsPstArr'] = serialize($pstArray); $hdrsArr['nxsPstField'] = $pstField;  $advSet = nxs_mkRemOptsArr($hdrsArr, $ck, $pstArray); $advSet['postAsArray'] = 1; 
-  $rep = nxs_remote_post($uplURL, $advSet); @unlink($tmpX); if(is_nxs_error($rep)) return array('err'=>print_r($rep, true)); else return $rep;  
+  $rep = nxs_remote_post($uplURL, $advSet);  @unlink($tmpX); if(is_nxs_error($rep)) return array('err'=>print_r($rep, true)); else return $rep;  
 }}
 
-if (!function_exists('nxs_altCurlProxy')){ function nxs_altCurlProxy( $ch, $r='' ){ if (empty($r['proxy'])) return; curl_setopt($ch, CURLOPT_PROXY, $r['proxy']['proxy']);  
-  if (!empty($r['proxy']['up'])) curl_setopt($ch, CURLOPT_PROXYUSERPWD, $r['proxy']['up']); if (!empty($r['proxy']['proxys5']))  curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+//## ShortCode [nxs_fbembed accnum=0]
+if (!function_exists("nxs_postedlinks_func")) {function nxs_postedlinks_func( $atts ) { extract( shortcode_atts( array('accnum' => '0'), $atts ) );  $pid = get_the_ID();   global $nxs_snapAvNts; $txtOut = '';
+  global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
+
+   foreach ($nxs_snapAvNts as $avNt) { $opt =  get_post_meta($pid, 'snap'.$avNt['code'], true); $opt =  maybe_unserialize($opt); 
+       if (!empty($opt) && is_array($opt)) foreach ($opt as $ii=>$op) { 
+          if (!empty($op['postURL'])) $txtOut .= '<a href="'.$op['postURL'].'">'.$avNt['name'].(!empty($options[$avNt['lcode']][$ii]['nName'])?' ('.$options[$avNt['lcode']][$ii]['nName'].')':'').'</a><br/>';
+       }
+   } return $txtOut;
 }}
-if (!function_exists('nxs_getCKVal')){ function nxs_getCKVal($name, $ck) { foreach ($ck as $c) if ($c->name==$name) return($c->value); return false; } }
+
+if (function_exists("add_shortcode")) add_shortcode( 'nxs_postedlinks', 'nxs_postedlinks_func' );
+
 ?>

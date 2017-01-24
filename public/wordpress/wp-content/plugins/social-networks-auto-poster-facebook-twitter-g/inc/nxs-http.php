@@ -252,6 +252,13 @@ if (!class_exists('nxs_Error')){ class nxs_Error { var $errors = array();
 	function __construct($code = '', $message = '') { if ( empty($code) ) return; $this->errors[$code][] = $message; }
 	function get_errors() { if ( empty($this->errors) ) return array(); else return $this->errors; }
 	function add($code, $message, $data = '') { $this->errors[$code][] = $message; }
+    public function get_error_messages($code = '') {
+      if ( empty($code) ) { $all_messages = array(); foreach ( (array) $this->errors as $code => $messages ) $all_messages = array_merge($all_messages, $messages); return $all_messages; }
+      if ( isset($this->errors[$code]) ) return $this->errors[$code]; else return array();
+    }
+    public function get_error_message($code = '') { if ( empty($code) ) $code = $this->get_error_code(); $messages = $this->get_error_messages($code); if ( empty($messages) ) return ''; return $messages[0]; }        
+    public function get_error_codes() { if ( empty($this->errors) ) return array(); return array_keys($this->errors); }
+    public function get_error_code() { $codes = $this->get_error_codes(); if ( empty($codes) ) return ''; return $codes[0]; }    
 } }
 
 if (!function_exists("is_nxs_error")) { function is_nxs_error($thing) { if ( is_object($thing) && ( is_a($thing, 'nxs_Error') ||  is_a($thing, 'wp_Error') ) ) return true; return false; }}

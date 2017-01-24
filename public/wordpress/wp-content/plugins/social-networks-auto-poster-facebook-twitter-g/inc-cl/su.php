@@ -31,7 +31,7 @@ if (!class_exists("nxs_snapClassSU")) { class nxs_snapClassSU extends nxs_snapCl
        <strong><?php _e('Post with tags', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong> <?php _e('Tags from the blogpost will be included', 'social-networks-auto-poster-facebook-twitter-g'); ?>                                
     </div> <?php
   }
-  function advTab($ii, $options){}
+  function advTab($ii, $options){ $this->showProxies($this->ntInfo['lcode'], $ii, $options); }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ 
     foreach ($post as $ii => $pval){       

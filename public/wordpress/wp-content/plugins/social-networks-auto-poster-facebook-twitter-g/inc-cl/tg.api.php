@@ -1,7 +1,7 @@
 <?php
 
-//## NextScripts FriendFeed Connection Class
-$nxs_snapAPINts[] = array('code'=>'TG', 'lcode'=>'tg', 'name'=>'Pinterest');
+//## NextScripts TG Connection Class
+$nxs_snapAPINts[] = array('code'=>'TG', 'lcode'=>'tg', 'name'=>'Telegram');
 
 if (!class_exists("nxs_class_SNAP_TG")) { class nxs_class_SNAP_TG {
 	

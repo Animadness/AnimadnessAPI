@@ -76,7 +76,7 @@ if (!class_exists("nxs_snapClassOK")) { class nxs_snapClassOK extends nxs_snapCl
     return $optMt;
   }
   
-  function adjPublishWP(&$options, &$message, $postID){ $twMsgFormat = $options['msgFormat']; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 10; //prr($message); prr($options);
+  function adjPublishWP(&$options, &$message, $postID){ 
     if (!empty($postID)) { if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, !empty($options['wpImgSize'])?$options['wpImgSize']:'full');
       if (preg_match("/noImg.\.png/i", $imgURL)) { $imgURL = ''; $isNoImg = true; }
       $message['imageURL'] = $imgURL;

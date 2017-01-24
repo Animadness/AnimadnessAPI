@@ -209,14 +209,14 @@ class SQ_Post extends SQ_FrontController {
             SQ_Action::apiCall('sq/seo/post', $args, 30);
         } else {
             $process = array();
-            if (get_transient('sq_seopost') !== false) {
-                $process = json_decode(get_transient('sq_seopost'), true);
+            if (get_option('sq_seopost') !== false) {
+                $process = json_decode(get_option('sq_seopost'), true);
             }
 
             $process[] = $args;
 
             //save for later send to api
-            set_transient('sq_seopost', json_encode($process), 7200);
+            update_option('sq_seopost', json_encode($process));
             wp_schedule_single_event(time(), 'sq_processApi');
         }
 
@@ -341,8 +341,8 @@ class SQ_Post extends SQ_FrontController {
         SQ_ObjController::getController('SQ_Tools', false);
         SQ_ObjController::getController('SQ_Action', false);
 
-        if (get_transient('sq_seopost') !== false) {
-            $process = json_decode(get_transient('sq_seopost'), true);
+        if (get_option('sq_seopost') !== false) {
+            $process = json_decode(get_option('sq_seopost'), true);
             foreach ($process as $key => $call) {
 
                 $response = json_decode(SQ_Action::apiCall('sq/seo/post', $call, 60));
@@ -351,7 +351,7 @@ class SQ_Post extends SQ_FrontController {
                     unset($process[$key]);
                 }
             }
-            set_transient('sq_seopost', json_encode($process));
+            update_option('sq_seopost', json_encode($process));
         }
     }
 

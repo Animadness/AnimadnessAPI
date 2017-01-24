@@ -5,14 +5,14 @@ if (!class_exists("NS_SNAutoPoster")) {
         var $dbOptionsName = "NS_SNAutoPoster";       
         var $nxs_options = ""; var $nxs_ntoptions = ""; var $sMode = array('s'=>'S', 'l'=>'F', 'u'=>'O', 'a'=>'S'); 
         
-        function __construct() {  load_plugin_textdomain('social-networks-auto-poster-facebook-twitter-g', FALSE, substr(dirname( plugin_basename( __FILE__ ) ), 0, -4).'/lang/'); $this->nxs_options = $this->getAPOptions(); } 
+        function __construct() {  load_plugin_textdomain('social-networks-auto-poster-facebook-twitter-g', FALSE, substr(dirname( plugin_basename( __FILE__ ) ), 0, -4).'/lang/'); $this->getAPOptions(); } 
         //## Constructor
         function NS_SNAutoPoster() { }
         //## Initialization function
-        function init() { $this->nxs_options = $this->getAPOptions(); }
+        function init() { $this->getAPOptions(); }
         //## Administrative Functions
         //## Options loader function
-        function getAPOptions() { global $nxs_isWPMU, $nxs_snapAvNts, $blog_id; $dbMUOptions = array(); 
+        function getAPOptions() { global $nxs_isWPMU, $nxs_snapAvNts, $nxs_snapSetPgURL, $blog_id; $dbMUOptions = array(); 
             //## Some Default Values            
             //$options = array('nsOpenGraph'=>1);            
             $dbOptions = get_option($this->dbOptionsName);  $dbOptions['ver'] = 306; $this->nxs_ntoptions = get_site_option($this->dbOptionsName); $nxs_UPPath = 'nxs-snap-pro-upgrade';                      
@@ -29,7 +29,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 if (method_exists($ntt,'toLatestVer')) $uArr[$ii] = $ntt->toLatestVer($aNt);  else $uArr[$ii] = $aNt;
                 if (!empty($uArr[$ii]['isUpdd'])) { unset($uArr[$ii]['isUpdd']); $needToSave = true; }
               } $options[$avNt['lcode']] = $uArr; }
-            } if ($needToSave) update_option($this->dbOptionsName, $options); //prr($options);
+            } if ($needToSave) update_option($this->dbOptionsName, $options); 
             if ( (!$nxs_isWPMU || $blog_id==1) && function_exists('nxs_getInitAdd')) nxs_getInitAdd($options);
             if (!empty($options['uk'])) $options['uk']='API'; if (defined('NXSAPIVER') && (empty($options['ukver']) || $options['ukver']!=NXSAPIVER)){$options['ukver']=NXSAPIVER; update_option($this->dbOptionsName, $options);}            
             if (!empty($options['ukver']) && $options['ukver'] == nsx_doDecode('q234t27414r2q2')) $options['ht'] = 104;
@@ -55,7 +55,7 @@ if (!class_exists("NS_SNAutoPoster")) {
                 $ccts = maybe_unserialize($options['nxsCPTSeld']); if (!empty($ccts) && is_array($ccts)) $options['fltrs']['nxs_post_type'] = array_merge($ccts, $options['fltrs']['nxs_post_type']); unset($options['nxsCPTSeld']); }      
             if (isset($options['useForPages'])) { $options['fltrs']['nxs_post_type'][] = 'post'; $options['fltrsOn']='1'; if($options['useForPages'] =='1') $options['fltrs']['nxs_post_type'][] = 'page'; unset($options['useForPages']); } 
            
-            return $options;
+            $this->nxs_options = $options;
         }
   
         function showSNAP_WPMU_OptionsPage(){ global $nxs_snapAvNts, $nxs_snapThisPageUrl, $nxsOne, $wpdb, $nxs_isWPMU; $nxsOne = ''; $options = $this->nxs_options; 
@@ -101,7 +101,14 @@ define('WP_ALLOW_MULTISITE', true);<br/>to<br/>define('WP_ALLOW_MULTISITE', fals
             $secCheck =  wp_verify_nonce($_POST['nxsChkUpl_wpnonce'], 'nxsChkUpl');
             if ($secCheck!==false && isset($_FILES['impFileSettings_button']) && is_uploaded_file($_FILES['impFileSettings_button']['tmp_name'])) { $fileData = trim(file_get_contents($_FILES['impFileSettings_button']['tmp_name']));
               while (substr($fileData, 0,1)!=='a') $fileData = substr($fileData, 1);              
-              $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['useSSLCert'])) { $options = $uplOpt; $this->nxs_options = $options;  update_option($this->dbOptionsName, $options); } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
+              $uplOpt = maybe_unserialize($fileData); if (is_array($uplOpt) && isset($uplOpt['useSSLCert'])) { $options = $uplOpt; 
+                foreach ($nxs_snapAvNts as $avNt) {
+                  if (!empty($options[$avNt['lcode']])) { $uArr = array(); foreach ($options[$avNt['lcode']] as $ii=>$aNt) if (isset($ii)&&$ii!=='') { $clName = 'nxs_snapClass'.$avNt['code'];  $ntt = new $clName; 
+                    if (method_exists($ntt,'toLatestVer')) $uArr[$ii] = $ntt->toLatestVer($aNt);  else $uArr[$ii] = $aNt;
+                    if (!empty($uArr[$ii]['isUpdd'])) unset($uArr[$ii]['isUpdd']);
+                  } $options[$avNt['lcode']] = $uArr; }
+                } $this->nxs_options = $options;  update_option($this->dbOptionsName, $options); 
+              } else { ?><div class="error" id="message"><p><strong>Incorrect Import file.</div><?php } 
             } 
           }
           //## Save Settings
@@ -271,7 +278,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
            <?php 
            
            if (empty($options['showNTListCats'])) foreach ($nxs_snapAvNts as $avNt) { if (!isset($options[$avNt['lcode']]) || count($options[$avNt['lcode']])==0) $mt=0; else $mt = 1+max(array_keys($options[$avNt['lcode']]));
-               echo '<option value ="'.$avNt['code'].$mt.'" data-imagesrc="'.NXS_PLURL.'img/'.(!empty($avNt['imgcode'])?$avNt['imgcode']:$avNt['lcode']).'16.png">'.$avNt['name'].'</option>'; 
+              echo '<option value ="'.$avNt['code'].$mt.'" data-imagesrc="'.NXS_PLURL.'img/'.(!empty($avNt['imgcode'])?$avNt['imgcode']:$avNt['lcode']).'16.png">'.$avNt['name'].'</option>'; 
            } else { 
               $nxs_snapAvNtsDD = array(); foreach ($nxs_snapAvNts as $avNt) if (!empty($avNt['type'])) $nxs_snapAvNtsDD[$avNt['type']][] = $avNt; else $nxs_snapAvNtsDD['Other'][] = $avNt; uksort($nxs_snapAvNtsDD, 'nxs_add_array_sort');//prr($nxs_snapAvNtsDD);           
               foreach ($nxs_snapAvNtsDD as $ttp => $avNtD) { echo '<option data-title="1" data-imagesrc="'.NXS_PLURL.'img/arrow_r_green_c1.png">'.$ttp.'</option>'; 
@@ -422,7 +429,7 @@ if ( is_array($category_ids) && is_array($pk) && count($category_ids) == count($
             <div class="nxs_box"> <div class="nxs_box_header"><h3><?php _e('Interface', 'social-networks-auto-poster-facebook-twitter-g') ?></h3></div>
             <div class="nxs_box_inside"> <span style="font-size: 11px; margin-left: 1px;">How to show the Networks List in the "Add New Network" dropdown. </span> <br/>                                                                                              
               <div class="itemDiv">
-              <input type="radio" name="showNTListCats" value="1" <?php if (!empty($options['showNTListCats'])) echo 'checked="checked"'; ?> /> <b>Categorized.</b> - Please show supported networks with categories.
+              <input type="radio" name="showNTListCats" value="1" <?php if (!empty($options['showNTListCats'])) echo 'checked="checked"'; ?> /> <b>Categorized.</b> - Please show supported networks with categories.<br/>
               <input type="radio" name="showNTListCats" value="0" <?php if (empty($options['showNTListCats'])) echo 'checked="checked"'; ?> /> <b>Plain.</b> - Please don't confuse me, just show the plain list.            
               </div><br/><div class="itemDiv"><span>How to show list of networks on the "Add New Post" page:</span><br/>
               &nbsp;&nbsp;&nbsp;<input type="radio" name="howToShowNTS" value="C" <?php if (!empty($options['howToShowNTS']) && $options['howToShowNTS']=='C') echo 'checked="checked"'; ?> /> <b>Collapsed.</b><br/>
@@ -969,10 +976,10 @@ _e('Plugin Version', 'social-networks-auto-poster-facebook-twitter-g'); ?>: <spa
           
         
           <table style="margin-bottom:40px; clear:both;" width="100%" border="0"><?php
-          foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; 
+          foreach ($nxs_snapAvNts as $avNt) { $clName = 'nxs_snapClass'.$avNt['code']; $ntClInst = new $clName();
              if ( isset($avNt['lcode']) && isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0) { 
-                 foreach ($options[$avNt['lcode']] as $indx=>$pbo){ if (empty($pbo['nName'])) $pbo['nName'] = $avNt['name']; if (!isset($pbo['do'])) $pbo['do'] = $pbo['do'.$avNt['code']];   $options[$avNt['lcode']][$indx]=$pbo; } uasort($options[$avNt['lcode']], 'nxsLstSort');
-                 $ntClInst = new $clName(); $ntClInst->showEdPostNTSettings($options[$avNt['lcode']], $post); 
+                 foreach ($options[$avNt['lcode']] as $indx=>$pbo){ if (empty($pbo['nName'])) $pbo['nName'] = $ntClInst->makeUName($pbo, $indx); if (!isset($pbo['do'])) $pbo['do'] = $pbo['do'.$avNt['code']];   $options[$avNt['lcode']][$indx]=$pbo; } uasort($options[$avNt['lcode']], 'nxsLstSort');
+                  $ntClInst->showEdPostNTSettings($options[$avNt['lcode']], $post); 
              }
           }
          ?></table><hr/><div>

@@ -49,6 +49,9 @@ class SQ_BlockSettings extends SQ_BlockController {
 
                 SQ_Tools::saveOptions('sq_keyword_help', (int) SQ_Tools::getValue('sq_keyword_help'));
                 SQ_Tools::saveOptions('sq_keyword_information', (int) SQ_Tools::getValue('sq_keyword_information'));
+                SQ_Tools::saveOptions('sq_force_savepost', (int) SQ_Tools::getValue('sq_force_savepost'));
+
+
                 SQ_Tools::saveOptions('sq_sla', (int) SQ_Tools::getValue('sq_sla'));
                 SQ_Tools::saveOptions('sq_keywordtag', (int) SQ_Tools::getValue('sq_keywordtag'));
                 SQ_Tools::saveOptions('sq_local_images', (int) SQ_Tools::getValue('sq_local_images'));

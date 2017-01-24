@@ -97,15 +97,19 @@ if (!class_exists("nxs_class_SNAP_ST")) { class nxs_class_SNAP_ST {
       if (!is_array($options)) { $badOut['Error'] = 'No Options'; return $badOut; }      
       if (!isset($options['uPass']) || trim($options['uPass'])=='') { $badOut['Error'] = 'Not Authorized'; return $badOut; }      
       if (empty($options['imgSize'])) $options['imgSize'] = '';
+      //## Get Saved Login Info
+      if (function_exists('nxs_getOption')) { $opVal = array(); $opNm = 'nxs_snap_st_'.sha1('nxs_snap_st'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); } 
       //## Format Post
-      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFrmt'], $message); 
-      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['msgTFrmt'], $message);
+      if (!empty($message['pText'])) $text = $message['pText']; else $text = nxs_doFormatMsg($options['msgFormat'], $message); 
+      if (!empty($message['pTitle'])) $msgT = $message['pTitle']; else $msgT = nxs_doFormatMsg($options['msgTFormat'], $message);
       //## Make Post            
       if (isset($message['imageURL'])) $imgURL = trim(nxs_getImgfrOpt($message['imageURL'], $options['imgSize'])); else $imgURL = '';       
       //## Make Post   
-      if (!empty($options['ck'])) $ck = maybe_unserialize($options['ck']); $pass = substr($options['uPass'], 0, 5)=='n5g9a'?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'];
+      $pass = (substr($options['uPass'], 0, 5)=='n5g9a'||substr($options['uPass'], 0, 5)=='g9c1a'||substr($options['uPass'], 0, 5)=='b4d7s')?nsx_doDecode(substr($options['uPass'], 5)):$options['uPass'];
       $nt = new nxsAPI_ST(); $nt->debug = false; if (!empty($ck)) $nt->ck = $ck; $loginErr = $nt->connect($options['uName'], $pass); 
       if (!$loginErr) { $post = array('url'=>$message['url'], 'toURL'=>$options['mgzURL'], 'imgURL'=>$imgURL, 'title'=>$msgT, 'text'=>$text ); $ret = $nt->post($post);         
+        //## Save Login Info
+        if (function_exists('nxs_saveOption')) { if (empty($opVal['ck'])) $opVal['ck'] = ''; if (is_array($ret) && $ret['isPosted']=='1' && $opVal['ck'] != $nt->ck) { $opVal['ck'] = $nt->ck; nxs_saveOption($opNm, $opVal); } }           
         if (is_array($ret)) { $ret['ck'] = $nt->ck; return $ret;  } else return print_r($ret, true);
       } else return print_r($loginErr, true);      
     }      

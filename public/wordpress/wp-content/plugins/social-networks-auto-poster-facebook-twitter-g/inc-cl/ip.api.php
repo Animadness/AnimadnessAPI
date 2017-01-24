@@ -30,10 +30,10 @@ if (!class_exists("nxs_class_SNAP_IP")) { class nxs_class_SNAP_IP {
       $link = urlencode($message['url']); $desc = urlencode(substr($msgT, 0, 250)); $ext = urlencode(substr($msg, 0, 1000)); $tags = $message['tags'];      
       if (!(preg_match("@^(https?|ftp)://[^\s/$.?#].[^\s]*$@iS", $message['url']))) return 'Error: Unvalid URL: '.$message['url'];            
       $apicall = "https://www.instapaper.com/api/add?red=api&url=$link&title=$desc&selection=$ext";
-      $hdrsArr = $this->nxs_getIPHeaders($options['uName'].':'.$pass); $cnt = nxs_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );//  prr($cnt);
+      $hdrsArr = $this->nxs_getIPHeaders($options['uName'].':'.$pass);  $advSet = nxs_mkRemOptsArr($hdrsArr);  $cnt = nxs_remote_get( $apicall, $advSet );//  prr($cnt);
       
       if(is_nxs_error($cnt)) { $error_string = $cnt->get_error_message(); if (stripos($error_string, ' timed out')!==false) { sleep(10); 
-        $cnt = nxs_remote_get( $apicall, array( 'method' => 'GET', 'timeout' => 45, 'redirection' => 0,  'headers' => $hdrsArr) );}
+        $cnt = nxs_remote_get( $apicall, $advSet );}
       } 
       if(is_nxs_error($cnt)) $ret = 'Something went wrong - '.print_r($cnt, true);  else {      
         if (is_array($cnt) &&  stripos($cnt['body'],'bookmark_id')!==false) return array('postID'=>CutFromTo($cnt['body'],'"bookmark_id": ','}'), 'isPosted'=>1, 'postURL'=>'IP', 'pDate'=>date('Y-m-d H:i:s'));

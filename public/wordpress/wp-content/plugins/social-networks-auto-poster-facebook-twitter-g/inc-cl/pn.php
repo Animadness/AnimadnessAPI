@@ -5,6 +5,9 @@ $nxs_snapAvNts[] = array('code'=>'PN', 'lcode'=>'pn', 'name'=>'Pinterest', 'type
 if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN extends nxs_snapClassNT { 
   var $ntInfo = array('code'=>'PN', 'lcode'=>'pn', 'name'=>'Pinterest', 'defNName'=>'uName', 'tstReq' => false, 'instrURL'=>'http://www.nextscripts.com/setup-installation-pinterest-social-networks-auto-poster-wordpress');    
   
+  var $noFuncMsg = 'Pinterest doesn\'t have a built-in API for automated posts yet. <br/>You need to get a special <a target="_blank" href="http://www.nextscripts.com/snap-api/">library module</a> to be able to publish your content to Pinterest.';  
+  function checkIfFunc() { return class_exists('nxsAPI_PN'); }
+  
   function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  
         $ntOptsOut['msgFormat'] = $ntOpts['pnMsgFormat'];  $ntOptsOut['uName'] = $ntOpts['pnUName'];  $ntOptsOut['uPass'] = $ntOpts['pnPass']; 
@@ -25,7 +28,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN extends nxs_snapCl
   function getMergeOptInfo($options, $ii) { $p = $options['uPass']; 
     if (!empty($p)) { $p = (substr($p, 0, 5)=='n5g9a'||substr($p, 0, 5)=='g9c1a'||substr($p, 0, 5)=='b4d7s')?nsx_doDecode(substr($p, 5)):$p; $options['uPass'] = 'g9c1a'.nsx_doEncode($p); $tPST = (!empty($_POST))?$_POST:''; 
       $_POST['pnBoard'] = $options['pnBoard']; $_POST['u'] = $options['uName']; $_POST['p'] = $p; $_POST['ii'] = $ii; 
-      $opNm = 'nxs_snap_pn_'.sha1('nxs_snap_pn'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) $opVal = $this->getListOfPNBoards($options); 
+      $opNm = 'nxs_snap_pn_'.sha1('nxs_snap_pn'.$options['uName'].$options['uPass']); $opVal = nxs_getOption($opNm); if (empty($opVal)) { $ntw[$nt][$ii]=$options; $opVal = $this->getListOfPNBoards($ntw); }
       if (!empty($opVal) & !is_array($opVal)) $options['uMsg'] = $opVal; else { if (!empty($opVal) & is_array($opVal)) $options = array_merge($options, $opVal); } $_POST = $tPST; 
     } return $options;
   }
@@ -40,7 +43,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN extends nxs_snapCl
             <?php $pgi = !empty($options['pnBoardsList'])?$options['pnBoardsList']:''; 
               echo (!empty($pgi) && stripos($pgi,$options['pnBoard'])===false)?'<option selected="selected" value="'.$options['pnBoard'].'">'.$options['pnBoard'].'</option>':''; 
               if (!empty($options['pnBoard'])) { $pgi = str_ireplace('selected="selected" ','',$pgi); $pgi = str_ireplace('value="'.$options['pnBoard'].'"','selected="selected" value="'.$options['pnBoard'].'"',$pgi); } 
-                else echo '<option value="">None(Click refresh icon to retrieve your subreddits)</option>';
+                else echo '<option value="">None(Click refresh icon to retrieve your boards)</option>';
               echo $pgi;
             ?>
           </select><div id="nxsPNInfoDivBlock<?php echo $ii; ?>" style="display: inline-block;"> <input type="text" style="display: none;" id="pnBRDIDCst<?php echo $ii; ?>" value="<?php echo $options['pnBoard']; ?>" class="nxs_pnBRDIDcst" data-tid="pnBoard<?php echo $ii; ?>" />         
@@ -69,7 +72,7 @@ if (!class_exists("nxs_snapClassPN")) { class nxs_snapClassPN extends nxs_snapCl
     <br/><br/></div>  
     <?php $this->elemMsgFormat($ii,'Post Text Format','msgFormat',$options['msgFormat']);?><br/ ><?php
   }
-  function advTab($ii, $options){}
+  function advTab($ii, $options){ $this->showProxies($this->ntInfo['lcode'], $ii, $options); }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ 
     foreach ($post as $ii => $pval){       

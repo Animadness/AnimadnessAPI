@@ -8,7 +8,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP extends nxs_snapCl
   function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  $ntOptsOut['attchImg'] = $ntOpts['attchImg'];
         $ntOptsOut['msgFormat'] = $ntOpts['apTextFormat']; $ntOptsOut['appKey'] = $ntOpts['appID'];  $ntOptsOut['appSec'] = $ntOpts['appSec']; 
-        $ntOptsOut['accessToken'] = $ntOpts['apAppAuthToken']; $ntOptsOut['authUserID'] = $ntOpts['appAppUserID']; $ntOptsOut['authUserName'] = $ntOpts['appAppUserName']; $ntOptsOut['isUpdd'] = '1'; 
+        $ntOptsOut['accessToken'] = $ntOpts['apAppAuthToken']; $ntOptsOut['authUserID'] = $ntOpts['appAppUserID']; $ntOptsOut['authUserName'] = $ntOpts['appAppUserName']; $ntOptsOut['isUpdd'] = '1'; $ntOptsOut['v'] = NXS_SETV;
       break;
     }
     return !empty($ntOptsOut)?$ntOptsOut:$ntOpts; 
@@ -88,7 +88,7 @@ if (!class_exists("nxs_snapClassAP")) { class nxs_snapClassAP extends nxs_snapCl
     return $optMt;
   }
   
-  function adjPublishWP(&$options, &$message, $postID){ $twMsgFormat = $options['msgFormat']; if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 10; //prr($message); prr($options);
+  function adjPublishWP(&$options, &$message, $postID){ 
     if (!empty($postID)) { if (trim($options['imgToUse'])!='') $imgURL = $options['imgToUse']; else $imgURL = nxs_getPostImage($postID, !empty($options['wpImgSize'])?$options['wpImgSize']:'full');
       if (preg_match("/noImg.\.png/i", $imgURL)) { $imgURL = ''; $isNoImg = true; }
       $message['imageURL'] = $imgURL;

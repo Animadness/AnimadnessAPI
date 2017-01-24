@@ -274,5 +274,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d3f5b2', end
 
 .nxs_ldos {color: #0073aa; cursor: pointer;}
 
+.nxs_authPopup {display: block; position: absolute;top: 25px;left: 25px; width: 50%; height: 540px; max-width: 960px; padding: 0px; border: 6px solid #008000; background-color: white; z-index: 1002;}
+.nxs_authPopupIn {z-index: 1003; height: 475px; overflow: auto; padding: 10px;}
+.nxs_authPopupHdr { background-color: #008000; color: white; height: 24px; padding: 10px;}
+.nxs_authPopupClose { background-color: white; color: #008000; height: 24px; float: right; padding: 4px;}
+
+.nxsTeal {color:#008080}
 .nxsBlue {color:#025294}
 .nxsGreen {color:#005800}
+.nxsOrange {color:#FF8800}
+.nxsDarkRed {color:#800000}
+.nxsDarkOrange {color:#884900}
+
+pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; }

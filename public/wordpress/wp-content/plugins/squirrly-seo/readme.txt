@@ -137,9 +137,10 @@ Type a keyword to the right of the screen and start using Squirrly Seo. Enjoy!
 Squirrly 5.2.8 it's a stable version of Squirrly SEO and has all the SEO requirements by Search Engines
 
 == Changelog ==
-= 6.2.7 =
+= 6.2.8 =
 * Fixed the Canonical link for some WP Themes
 * Added forced keyword update in Squirrly SEO Settings
+* Added a new Country in the Rank Option section
 
 = 6.2.6 =
 * Fixed Canonical link for facebook Open Graph

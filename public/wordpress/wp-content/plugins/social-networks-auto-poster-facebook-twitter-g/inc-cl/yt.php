@@ -9,7 +9,7 @@ if (!class_exists("nxs_snapClassYT")) { class nxs_snapClassYT extends nxs_snapCl
   function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName'];  
         $ntOptsOut['msgFormat'] = $ntOpts['ytMsgFormat']; $ntOptsOut['uName'] = $ntOpts['ytUName'];  $ntOptsOut['uPass'] = $ntOpts['ytPass']; 
-        $ntOptsOut['ytPageID'] = $ntOpts['ytPageID']; $ntOptsOut['ytGPPageID'] = $ntOpts['ytGPPageID']; $ntOptsOut['isUpdd'] = '1'; 
+        $ntOptsOut['ytPageID'] = $ntOpts['ytPageID']; $ntOptsOut['ytGPPageID'] = $ntOpts['ytGPPageID']; $ntOptsOut['isUpdd'] = '1'; $ntOptsOut['v'] = NXS_SETV;
       break;
     }
     return !empty($ntOptsOut)?$ntOptsOut:$ntOpts; 

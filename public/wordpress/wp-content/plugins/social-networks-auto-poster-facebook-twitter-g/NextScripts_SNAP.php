@@ -4,12 +4,13 @@ Plugin Name: NextScripts: Social Networks Auto-Poster
 Plugin URI: http://www.nextscripts.com/social-networks-auto-poster-for-wordpress
 Description: This plugin automatically publishes posts from your blog to multiple accounts on Facebook, Twitter, and Google+ profiles and/or pages.
 Author: NextScripts
-Version: 3.7.9
+Version: 3.7.12
 Author URI: http://www.nextscripts.com
 Text Domain: nxs_snap
 Copyright 2012-2016  NextScripts, Inc
 */
-define( 'NextScripts_SNAP_Version' , '3.7.9' ); 
+define( 'NextScripts_SNAP_Version' , '3.7.12' ); 
+
 
 $nxs_mLimit = ini_get('memory_limit'); if (strpos($nxs_mLimit, 'G')) {$nxs_mLimit = (int)$nxs_mLimit * 1024;} else {$nxs_mLimit = (int)$nxs_mLimit;}
   if ($nxs_mLimit>0 && $nxs_mLimit<64) { add_filter('plugin_action_links','ns_add_nomem_link', 10, 2 );
@@ -32,7 +33,7 @@ do_action('nxs_doSomeMoreSecond');
 if (class_exists("NS_SNAutoPoster")) { nxs_checkAddLogTable(); $plgn_NS_SNAutoPoster = new NS_SNAutoPoster(); new nxs_Filters;  }
 //## Tests
 if (isset($_GET['page']) && $_GET['page']=='NextScripts_SNAP.php' && isset($_GET['do']) && $_GET['do']=='test'){ 
-  error_reporting(E_ALL); ini_set('error_reporting', E_ALL); ini_set('display_errors', 1); if (function_exists('gzdeflate')) echo "Y"; else echo "N";  echo "Testting... cURL<br/>";
+  error_reporting(E_ALL); ini_set('error_reporting', E_ALL); ini_set('display_errors', 1); echo "Testting... cURL<br/>Ver: ".NextScripts_SNAP_Version.(defined('NXSAPIVER')?"  API: ".NXSAPIVER:'')."<br/><br/>Deflate - ";  echo (function_exists('gzdeflate'))?"Yes":"No";  echo "<br/>";
   nxs_cURLTest("http://www.nextscripts.com/", "HTTPS to NXS", "Social Networks");
   nxs_cURLTest("http://www.google.com/intl/en/contact/", "HTTP to Google", "Mountain View, CA");
   nxs_cURLTest("https://www.google.com/intl/en/contact/", "HTTPS to Google", "Mountain View, CA");

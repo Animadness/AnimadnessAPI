@@ -23,7 +23,9 @@ class nxs_Filters {
             
             $builtin_taxonomies       = get_taxonomies( array( 'public' => true, '_builtin' => true ) );
             $custom_taxonomies        = get_taxonomies( array( 'public' => true, '_builtin' => false ) );
-            self::$taxonomies         = array_merge( $builtin_taxonomies, $custom_taxonomies ); natsort( self::$taxonomies );
+            $builtin_taxonomies2       = get_taxonomies( array( 'public' => false, '_builtin' => true ) );
+            $custom_taxonomies2        = get_taxonomies( array( 'public' => false, '_builtin' => false ) );
+            self::$taxonomies         = array_merge( $builtin_taxonomies, $custom_taxonomies, $builtin_taxonomies2, $custom_taxonomies2  ); natsort( self::$taxonomies );
             
             // self::$posts = get_posts( array( 'post_type' => self::$posts_types, 'numberposts' => -1, 'post_status' => 'any' ) ); prr(self::$posts); prr(self::$posts_types);  WTF?????? Retreiving all posts in init?????
             self::$post_formats = get_theme_support( 'post-formats' ); // prr(self::$post_formats);

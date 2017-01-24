@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, 500px, tumblr, blogger, blogspot, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Telegram, Instagram, xing, medium, yo, Weibo, mailchimp, Odnoklassniki, ok.ru
 Requires at least: 3.4
 Tested up to: 4.7.1
-Stable tag: 3.7.9
+Stable tag: 3.7.12
 License: GPLv2 or later
 
 Automatically publishes blogposts to profiles/pages/groups on Facebook, Twitter, Instagram, Google+, Pinterest, LinkedIn, Blogger, Tumblr ... 22 more
@@ -13,16 +13,6 @@ Automatically publishes blogposts to profiles/pages/groups on Facebook, Twitter,
 == Description ==
 
 **This plugin automatically publishes posts from your blog to your Social Network accounts** such as Facebook, Twitter, Google+(Google Plus), Blogger, Tumblr, Flickr, LiveJournal, Flipboard, Instagram, Telegram, DreamWidth, Delicious, Diigo, Instapaper, Stumbleupon, LinkedIn, ok.ru, Pinterest, Plurk, VKontakte(VK.com), YouTube, App.net, Scoop.It, Wordpress, XING etc. The whole process is completely automated. Just write a new post and either entire post or it's nicely formatted announcement with backlink will be published to all your configured social networks. You can reach the most audience and tell all your friends, readers and followers about your new post. Plugin works with profiles, business pages, community pages, groups, etc. Messages are 100% customizable and adopted for each network requirements.
-
-**NEW Beta version available http://nxs.fyi/beta3710**
-Much better and easier Facebook and LinkedIn Configuration. Please try it and let us know.
-
-= 3.7.10.Beta [01/11/2017] = 
-
-* New - [LinkedIn] Support for LinkedIn API v2. Ability to post to Company Pages. (Yes! It's now a part of LinkedIn's built-in free API.)
-* New - [LinkedIn] [PRO ONLY] Support "Pulse" Posts
-* New/Improvement - [Facebook] Complete overhaul of the Facebook configuration.
-* New/Improvement - [LinkedIn] Complete overhaul of the Facebook configuration.
 
 **ALL NEW SNAP for Wordpress Version 4 is coming soon...**
 
@@ -191,13 +181,20 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 
 = Details = 
 
-= 3.7.10.Beta [01/11/2017] = 
+= 3.7.12 [01/23/2017] = 
+
+* Bug Fix - [Twitter] Incorrectly formatted posts, missing links, images and "over 140 characters" error messages.
+* Bug Fix - [Facebook] Non-working “Import Comments/Replies”. Fatal error: Uncaught Error: Call to undefined function nxs_getBackFBComments()
+* Bug Fix - [vk.com] Fatal error: Cannot use object of type nxs_Error as array
+* Bug Fix - [Google+] Unnecessary debug info has been removed.
+
+= 3.7.11 [01/20/2017] = 
 
 * New - [LinkedIn] Support for LinkedIn API v2. Ability to post to Company Pages. (Yes! It's now a part of LinkedIn's built-in free API.)
 * New - [LinkedIn] [PRO ONLY] Support "Pulse" Posts
 * New/Improvement - [Facebook] Complete overhaul of the Facebook configuration.
 * New/Improvement - [LinkedIn] Complete overhaul of the Facebook configuration.
-
+* Many small improvements and bug fixes.
 
 = 3.7.9 [12/17/2016] = 
 
