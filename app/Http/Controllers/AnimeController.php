@@ -36,19 +36,19 @@ class AnimeController extends Controller
             // Set to Photo Type
             $termRelation = new TermRelation;
             $termRelation->object_id = $post->ID;
-            $termRelation->term_taxonomy_id = 2;
+            $termRelation->term_taxonomy_id = env('APP_ENV', 'local') === 'local' ? 2 : 3;
             $termRelation->save();
 
             // Set Anime Category
             $termRelation = new TermRelation;
             $termRelation->object_id = $post->ID;
-            $termRelation->term_taxonomy_id = 6;
+            $termRelation->term_taxonomy_id = env('APP_ENV', 'local') === 'local' ? 6 : 5;
             $termRelation->save();
 
             // Set Anime Tag
             $termRelation = new TermRelation;
             $termRelation->object_id = $post->ID;
-            $termRelation->term_taxonomy_id = 7;
+            $termRelation->term_taxonomy_id = env('APP_ENV', 'local') === 'local' ? 7 : 6;
             $termRelation->save();
         }
 
