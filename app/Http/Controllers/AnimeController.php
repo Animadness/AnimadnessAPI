@@ -8,6 +8,7 @@ use App\PostMeta as PostMeta;
 use Twitter;
 use File;
 use App\TermRelation as TermRelation;
+use Carbon\Carbon;
 
 class AnimeController extends Controller
 {
@@ -18,10 +19,14 @@ class AnimeController extends Controller
         $post = new Post;
         $post->post_author = $request->input('author', 1);
         $post->post_type = $request->input('type', 'post');
-        $post->post_status = $request->input('status', 'draft');
+        $post->post_status = $request->input('date') ? 'future' : $request->input('status', 'draft');
         $post->post_title = $request->input('title', $title);
         $post->post_name = $request->input('name', str_replace('.', '-', str_replace(' ', '-', strtolower($title))));
         $post->post_content = $request->input('content') ? urldecode($request->input('content')) : '';
+        if ($request->input('date')) {
+            $post->post_date =  Carbon::parse($request->input('date'));
+            $post->post_date_gmt = Carbon::parse($request->input('date'));
+        }
         $post->save();
 
         // Set Featured Image
@@ -46,39 +51,43 @@ class AnimeController extends Controller
         $termRelation->save();
 
         // Format Social Posts
-        $longPost = [
+        $snapPost = [
             "do" => 1,
             "msgFormat" => "%TITLE%\rhttps://animadness.net/#/anime/".$request->input('id')."\r\n\r\n%FULLTEXT%",
             "postType" => "I",
             "isAutoImg" => "A",
             "imgToUse" => "",
             "isAutoURL" => "A",
-            "urlToUse" => "",
-            "doFB" => 1
+            "urlToUse" => ""
         ];
-        $shortPost = $longPost;
-        $shortPost['msgFormat'] = $request->input('tweet', '%TITLE%');
-        $shortPost['msgFormat'] .= "\rhttps://animadness.net/#/anime/".$request->input('id');
 
         // Set Facebook Social Post
+        $facebookPost = $snapPost;
+        $facebookPost['doFB'] = 1;
         $postMeta = new PostMeta;
         $postMeta->post_id = $post->ID;
         $postMeta->meta_key = 'snapFB';
-        $postMeta->meta_value = maybe_serialize([$longPost]);
+        $postMeta->meta_value = maybe_serialize([$facebookPost]);
         $postMeta->save();
         
         // Set Google Social Post
+        $googlePost = $snapPost;
+        $googlePost['doGP'] = 1;
         $postMeta = new PostMeta;
         $postMeta->post_id = $post->ID;
         $postMeta->meta_key = 'snapGP';
-        $postMeta->meta_value = maybe_serialize([$longPost]);
+        $postMeta->meta_value = maybe_serialize([$googlePost]);
         $postMeta->save();
 
         // Set Twitter Social Post
+        $twitterPost = $snapPost;
+        $twitterPost['msgFormat'] = $request->input('tweet', '%TITLE%') . "\rhttps://animadness.net/#/anime/".$request->input('id');
+        $twitterPost['attchImg'] = 1;
+        $twitterPost['doTW'] = 1;
         $postMeta = new PostMeta;
         $postMeta->post_id = $post->ID;
         $postMeta->meta_key = 'snapTW';
-        $postMeta->meta_value = maybe_serialize([$shortPost]);
+        $postMeta->meta_value = maybe_serialize([$twitterPost]);
         $postMeta->save();
 
         // Return Response
