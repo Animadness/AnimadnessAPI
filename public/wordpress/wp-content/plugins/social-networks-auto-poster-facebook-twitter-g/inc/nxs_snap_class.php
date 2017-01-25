@@ -915,15 +915,14 @@ _e('Plugin Version', 'social-networks-auto-poster-facebook-twitter-g'); ?>: <spa
           $snap_isAutoPosted = get_post_meta($id, 'snap_isAutoPosted', true); if ($snap_isAutoPosted=='1' &&  $post->post_status=='future') { delete_post_meta($id, 'snap_isAutoPosted'); add_post_meta($id, 'snap_isAutoPosted', '2'); }
           foreach ($nxs_snapAvNts as $avNt) { // echo "--------------------------------------------";  prr($avNt);          
               if (isset($options[$avNt['lcode']]) && count($options[$avNt['lcode']])>0 && isset($NXS_POST[$avNt['lcode']]) && count($NXS_POST[$avNt['lcode']])>0) { $savedMeta = maybe_unserialize(get_post_meta($id, 'snap'.$avNt['code'], true)); 
-              if(is_array($NXS_POST[$avNt['lcode']])) { $ii=0;
-                  foreach ($NXS_POST[$avNt['lcode']] as $pst ) {  // echo "###########";  prr($pst); 
-                    if (is_array($pst) && empty( $pst['do'.$avNt['code']]) && empty($NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']])) $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']] = 0;                     
-                    if (is_array($pst) && empty( $pst['do']) && empty($NXS_POST[$avNt['lcode']][$ii]['do'])) $NXS_POST[$avNt['lcode']][$ii]['do'] = 0;                     
-                    if (!empty($NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']])) $NXS_POST[$avNt['lcode']][$ii]['do'] = $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]; 
-                      elseif (!empty($NXS_POST[$avNt['lcode']][$ii]['do']))         $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']] = $NXS_POST[$avNt['lcode']][$ii]['do'];                    
-                    $ii++;
+              if(is_array($NXS_POST[$avNt['lcode']])) { 
+                  foreach ($NXS_POST[$avNt['lcode']] as $ii=>$pst ) { 
+                    // if (is_array($pst) && empty( $pst['do'.$avNt['code']]) && empty($NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']])) $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']] = 0;                     
+                    if (is_array($pst) && empty( $pst['do']) && empty($NXS_POST[$avNt['lcode']][$ii]['do'])) $NXS_POST[$avNt['lcode']][$ii]['do'] = 0;                                         
+                    if (isset($NXS_ePOST[$avNt['lcode']][$ii]['do'.$avNt['code']])) unset($NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]); if (isset($savedMeta[$ii]['do'.$avNt['code']])) { unset($savedMeta[$ii]['do'.$avNt['code']]); }                    
+                    //if (!empty($NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']])) $NXS_POST[$avNt['lcode']][$ii]['do'] = $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']]; elseif (!empty($NXS_POST[$avNt['lcode']][$ii]['do']))         $NXS_POST[$avNt['lcode']][$ii]['do'.$avNt['code']] = $NXS_POST[$avNt['lcode']][$ii]['do'];                                        
                   }
-              } $newMeta = $NXS_POST[$avNt['lcode']]; // prr($newMeta);
+              } $newMeta = $NXS_POST[$avNt['lcode']]; 
               if (is_array($savedMeta) && is_array($newMeta)) $newMeta = nxsMergeArraysOV($savedMeta, $newMeta); // echo "#####~~~~~~~~~ ".$id."| snap".$avNt['code']; prr($savedMeta); echo "||"; prr($newMeta);// $newMeta = 'AAA';
               delete_post_meta($id, 'snap'.$avNt['code']); add_post_meta($id, 'snap'.$avNt['code'], str_replace('\\','\\\\',serialize($newMeta)));   
               }

@@ -888,7 +888,7 @@ if (!function_exists('nxs_adjFilters')){ function nxs_adjFilters($pval, $o) {
       if (isset($pval['fltrsOn'])) $o['fltrsOn'] = trim($pval['fltrsOn']); else $o['fltrsOn'] = 0;  //prr($o);
       if (isset($pval['fltrAfter'])) $o['fltrAfter'] = trim($pval['fltrAfter']); else if (isset($o['fltrAfter'])) unset($o['fltrAfter']); $o['fltrs'] = array(); 
       //## Image Selection      
-      if (isset($pval['wpImgSize']))   $o['wpImgSize'] = trim($pval['wpImgSize']); 
+      if (isset($pval['wpImgSize']))   $o['wpImgSize'] = trim($pval['wpImgSize']);
       //## Proxy
       if (isset($pval['proxyOn'])) $o['proxyOn'] = trim($pval['proxyOn']); else $o['proxyOn'] = 0;  //prr($o);
       if (isset($pval['proxy']))   $o['proxy']['proxy'] = trim($pval['proxy']); 
@@ -1214,16 +1214,16 @@ function nxs_do_this_hourly() {  $options = get_option('NS_SNAutoPoster');
     foreach ($riPosts as $postID) {  
       $fbpo =  get_post_meta($postID, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo); 
       if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii]) && isset($fbpo[$ii]['pgID']) && trim($fbpo[$ii]['pgID'])!=''){ 
-          $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]);  nxs_getBackFBComments($postID, $fbo, $fbpo[$ii]);
+          $ntClInst = new nxs_snapClassFB(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]);  $ntClInst->importComments($fbo, $postID, $fbpo[$ii]);
       }
     }      
   }   
   //## Twitter
-  if (is_array($options['tw'])) foreach ($options['tw'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj'; $twList = nxs_getBackTWCommentsList($fbo); 
+  if (is_array($options['tw'])) foreach ($options['tw'] as $ii=>$fbo) if ($fbo['riComments']=='1') {  $fbo['ii'] = $ii; $fbo['pType'] = 'aj'; 
     foreach ($riPosts as $postID) {  
       $fbpo =  get_post_meta($postID, 'snapTW', true); $fbpo =  maybe_unserialize($fbpo); 
       if (is_array($fbpo) && isset($fbpo[$ii]) && is_array($fbpo[$ii])  && isset($fbpo[$ii]['pgID']) && trim($fbpo[$ii]['pgID'])!=''){ 
-         $ntClInst = new nxs_snapClassTW(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); nxs_getBackTWComments($postID, $fbo, $fbpo[$ii], $twList);
+         $ntClInst = new nxs_snapClassTW(); $fbo = $ntClInst->adjMetaOpt($fbo, $fbpo[$ii]); $ntClInst->importComments($fbo, $postID, $fbpo[$ii]);
       }
     }      
   } 

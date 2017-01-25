@@ -60,6 +60,18 @@ jQuery(document).ready(function() {
   
   if (jQuery('.nxs_authPopupIn').length !=0 ) jQuery('.nxs_authPopupIn').scrollTop(jQuery('.nxs_authPopupIn')[0].scrollHeight);
   
+  
+  jQuery('.riTo_button').click(function() { var ii = jQuery(this).data('ii'); var nt = jQuery(this).data('nt'); var pid = jQuery(this).data('pid'); 
+     jQuery('#nxs_gPopupContent').html("<p>Getting Replies from "+nt+" ....</p>" + "<p></p>");
+     jQuery('#nxs_gPopup').bPopup({ modalClose: false, appendTo: '#nsStForm', opacity: 0.6, positionStyle: 'fixed'});  
+     jQuery.post(ajaxurl,{action: 'nxs_snap_aj',"nxsact":"getItFromNT", "fName":"importComments", nt:nt, pid:pid, ii:ii, nxs_mqTest:"'", _wpnonce: jQuery('#nxsSsPageWPN_wpnonce').val()}, function(j){  
+          jQuery('#nxs_gPopupContent').html('<p> ' + j + '</p>' +'<input type="button" class="bClose" value="Close" />');     
+     }, "html");          
+      
+      
+  });            
+  jQuery('.riToTW_button').click(function() { var data = { action: 'rePostToTW', id: jQuery('input#post_ID').val(), ri:1, nid:jQuery(this).attr('alt'), _wpnonce: jQuery('input#nxsSsPageWPN_wpnonce').val()}; callAjSNAP(data, 'Twitter'); });
+  
   //## End of jQuery(document).ready(function()
 });
 

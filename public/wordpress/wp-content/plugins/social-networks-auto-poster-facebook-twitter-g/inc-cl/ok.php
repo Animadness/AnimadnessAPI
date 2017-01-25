@@ -7,7 +7,7 @@ if (!class_exists("nxs_snapClassOK")) { class nxs_snapClassOK extends nxs_snapCl
   //#### Show Common Settings
   function showGenNTSettings($ntOpts){ $this->nt = $ntOpts;  $this->showNTGroup(); }  
   //#### Show NEW Settings Page
-  function showNewNTSettings($ii){ $defO = array('nName'=>'', 'do'=>'1', 'appKey'=>'', 'appSec'=>'', 'access_token'=>'', 'secret_session_key'=>'', 'postType'=>'A', 'msgFormat'=>"%EXCERPT%\r\n\r\n%URL%", 'imgSize'=>'original'); $this->showGNewNTSettings($ii, $defO); }
+  function showNewNTSettings($ii){ $defO = array('nName'=>'', 'do'=>'1', 'appKey'=>'', 'appSec'=>'', 'gid'=>'', 'access_token'=>'', 'secret_session_key'=>'', 'postType'=>'A', 'msgFormat'=>"%EXCERPT%\r\n\r\n%URL%", 'imgSize'=>'original'); $this->showGNewNTSettings($ii, $defO); }
   //#### Show Unit  Settings  
   function checkIfSetupFinished($options) { return !empty($options['gid']) && !empty($options['appKey']); }
   public function doAuth() {  }    

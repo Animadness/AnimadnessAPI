@@ -5,7 +5,7 @@ Donate link: http://www.nextscripts.com/social-networks-auto-poster-for-wordpres
 Tags: automation, autopost, auto-post, auto post, socialnetworks, socialnetwork, social networks, social network, facebook, Flipboard, google, google+, Flickr, twitter, google plus, pinterest, 500px, tumblr, blogger, blogspot, linkedin, delicious, delicious.com, reddit, reddit.com, plugin, links, Post, posts, api, automatic, seo, scoop.it, integration, bookmark, bookmarks, admin, images, image, social, sharing, share, repost, re-post, wordpress.com, StumbleUpon, Diigo, vBulletin, Plurk, forums, vKontakte, open graph, LiveJournal, SETT, YouTube, Telegram, Instagram, xing, medium, yo, Weibo, mailchimp, Odnoklassniki, ok.ru
 Requires at least: 3.4
 Tested up to: 4.7.1
-Stable tag: 3.7.12
+Stable tag: 3.7.14
 License: GPLv2 or later
 
 Automatically publishes blogposts to profiles/pages/groups on Facebook, Twitter, Instagram, Google+, Pinterest, LinkedIn, Blogger, Tumblr ... 22 more
@@ -168,7 +168,7 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 = Major Versions = 
 
 * **Latest version 3.7** - New networks - MailChimp, Weibo. Improved interface.
-* *Version 3.6* - New networks - Yo, Medium, 500px. Filters (http://www.nextscripts.com/snap-features/filters/).
+* *Version 3.6* - New networks - Yo, Medium, 500px. Filters (http://www.nextscripts.com/snap-features/filters).
 * *Version 3.5* - New networks - Telegram and Instagram. New publishing platform.
 * *Version 3.4* - New networks - XING, Kippt, compatibility with WP 3.9, 4.0, 4.1 and PHP 5.5. 
 * *Version 3.3* - Post to all social accounts without creating a Wordpress Post. New networks - Flickr, Flipboard, SETT and Scoop.It. 
@@ -180,6 +180,19 @@ Please see more <a href="http://www.nextscripts.com/faq/">Frequently asked quest
 * *Version 2.3* - Google+ image posts, delayed postings (Pro Only), new networks - Stumbleupon, vBulletin, Diigo
 
 = Details = 
+
+= 3.7.14 [01/24/2017] = 
+
+* Bug Fix [Critical] - [Facebook] "Invalid appsecret_proof" message.
+
+= 3.7.13 [01/24/2017] = 
+
+* New/Improvement - [Facebook] Support for third party tokens.
+* Bug Fix - [Tumblr] Incorrect "Unfinished setup" message
+* Bug Fix - [Facebook] Fixed Import comments
+* Bug Fix - [Twitter] Fixed Import replies/mentions
+* Bug Fix - Sometimes settings were not saved on "Edit Post" page.
+* Several other small bug fixes.
 
 = 3.7.12 [01/23/2017] = 
 

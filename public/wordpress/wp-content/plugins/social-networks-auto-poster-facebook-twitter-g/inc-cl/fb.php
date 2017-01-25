@@ -4,7 +4,7 @@ $nxs_snapAvNts[] = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook', 'type'
 
 if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapClassNT { 
   var $ntInfo = array('code'=>'FB', 'lcode'=>'fb', 'name'=>'Facebook', 'defNName'=>'', 'tstReq' => true, 'instrURL'=>'http://www.nextscripts.com/instructions/facebook-social-networks-auto-poster-setup-installation');      
-  var $defO = array('nName'=>'', 'do'=>'1', 'appKey'=>'', 'appSec'=>'', 'postType'=>'A', 'msgFormat'=>'New post (%TITLE%) has been published on %SITENAME%', 'attachInfo'=>'F', 'attachVideo'=>'N', 'pgID'=>'', 'msgATFormat'=>'%TITLE%', 'msgAFormat'=>'%EXCERPT%', 'msgACFormat'=>'', 'imgUpl'=>'T','fbURL'=>'');
+  var $defO = array('nName'=>'', 'do'=>'1', 'appKey'=>'', 'appSec'=>'', 'tpt'=>'' ,'postType'=>'A', 'msgFormat'=>'New post (%TITLE%) has been published on %SITENAME%', 'attachInfo'=>'F', 'attachVideo'=>'N', 'pgID'=>'', 'msgATFormat'=>'%TITLE%', 'msgAFormat'=>'%EXCERPT%', 'msgACFormat'=>'', 'imgUpl'=>'T','fbURL'=>'');
   //#### Update
   public function toLatestVer($ntOpts){ if( !empty($ntOpts['v'])) $v = $ntOpts['v']; else $v = 340; $ntOptsOut = '';  switch ($v) {
       case 340: $ntOptsOut = $this->toLatestVerNTGen($ntOpts); $ntOptsOut['do'] = $ntOpts['do'.$this->ntInfo['code']]; $ntOptsOut['nName'] = $ntOpts['nName']; // prr($ntOpts);
@@ -34,10 +34,10 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
   //#### Show NEW Settings Page
   public function showNewNTSettings($ii){  $this->showGNewNTSettings($ii, $this->defO); }
   //#### Show Unit  Settings  
-  public function checkIfSetupFinished($options) { return !empty($options['appKey']) && !empty($options['accessToken']) && (!empty($options['pgID']) || !empty($options['fbURL'])); }
+  public function checkIfSetupFinished($options) { return !empty($options['appKey']) && !empty($options['accessToken']) && (!empty($options['pgID']) || !empty($options['fbURL']) ); }
   public function makeUName($options, $ii) { return !empty($options['pgName'])?$options['pgName']: $this->ntInfo['name'].' #'.$ii; }
-  public function doAuth() { $ntInfo = $this->ntInfo; global $nxs_snapSetPgURL;     
-    if ( !empty($_GET['code']) && isset($_GET['state']) && substr($_GET['state'], 0, 7) == 'nxs-fb-'){ $this->showAuthTop();  $at = $_GET['code'];  $ii = str_replace('nxs-fb-','',$_GET['state']); $gGet = array();     
+  public function doAuth() { $ntInfo = $this->ntInfo; global $nxs_snapSetPgURL; 
+    if ( !empty($_GET['code']) && isset($_GET['state']) && substr($_GET['state'], 0, 7) == 'nxs-fb-'){ $this->showAuthTop(); echo "--== Auth ==--"; $at = $_GET['code'];  $ii = str_replace('nxs-fb-','',$_GET['state']); $gGet = array();     
       if (!empty($_SERVER['QUERY_STRING'])) parse_str($_SERVER['QUERY_STRING'], $gGet); elseif (!empty($_SERVER['argv'][0])) parse_str($_SERVER['argv'][0], $gGet); else { $gGet = $_GET; prr($_GET); unset($gGet['post_type']);} prr($gGet);  unset($gGet['code']); unset($gGet['state']); prr($gGet);
       $sturl = explode('?',$nxs_snapSetPgURL); $nxs_snapSetPgURL = $sturl[0].((!empty($gGet))?'?'.http_build_query($gGet):''); $fbo = $this->nt[$ii]; $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); prr($fbo);     
       $tknURL = 'https://graph.facebook.com/v2.3/oauth/access_token?client_id='.$fbo['appKey'].'&state=nxs-fb-'.$ii.'&redirect_uri='.urlencode($nxs_snapSetPgURL).'&client_secret='.$fbo['appSec'].'&code='.$at; $response  = nxs_remote_get($tknURL, $advSet); echo "<br/>TKN URL: "; prr($tknURL);   
@@ -62,17 +62,17 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
   function fbURLToPageID($fbo, $ii){ if (empty($fbo['pgID']) && !empty($fbo['fbURL'])) { if (empty($fbo['pgID']))  { $fbo['uMsg'] = ''; 
       if ( substr($fbo['fbURL'], 0, 4)!='http' )  $fbo['fbURL'] = 'http://'.$fbo['fbURL']; $fbPgID = $fbo['fbURL']; if (substr($fbPgID, -1)=='/') $fbPgID = substr($fbPgID, 0, -1);  $fbPgID = substr(strrchr($fbPgID, "/"), 1);
         if (strpos($fbPgID, '?')!==false) $fbPgID = substr($fbPgID, 0, strpos($fbPgID, '?')); if (strpos($fbPgID, '-')!==false) { $possID = substr(strrchr($fbPgID, "-"), 1);   $fbPgID = (strlen($possID)>10 && is_numeric($possID))?$possID:$fbPgID; }
-        $fbo['pgID'] = $fbPgID; if (strpos($fbo['fbURL'], '?')!==false) $fbo['fbURL'] = substr($fbo['fbURL'], 0, strpos($fbo['fbURL'], '?')); prr($fbo, 'BCHEK');// prr($pval); prr($options[$ii]); // die();
+        $fbo['pgID'] = $fbPgID; if (strpos($fbo['fbURL'], '?')!==false) $fbo['fbURL'] = substr($fbo['fbURL'], 0, strpos($fbo['fbURL'], '?')); //prr($fbo, 'BCHEK');// prr($pval); prr($options[$ii]); // die();
       } if (!is_numeric($fbo['pgID'])) { $pgInfo = $this->getPageInfo($fbo); /* prr($pgInfo, "PAGE INFO"); */  if (!is_array($pgInfo)) $fbo['uMsg'].=$pgInfo; else $fbo['pgID'] = $pgInfo['id']; }    
       if (!empty($fbo['pgID'])) { unset($fbo['fbURL']); nxs_save_glbNtwrks($this->ntInfo['lcode'],$ii,$fbo,'*'); }
     } return $fbo;
   }    
-  function getPageInfo($fbo){  $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $aacct = array('access_token'=>$fbo['accessToken'], 'appsecret_proof'=>hash_hmac('sha256', $fbo['accessToken'], $fbo['appSec']), 'method'=>'get', 'metadata'=>'1', 'limit'=>250);  
+  function getPageInfo($fbo){  $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $aacct = array('access_token'=>$fbo['accessToken'], 'method'=>'get', 'metadata'=>'1', 'limit'=>250); if (empty($fbo['tpt'])) $aacct['appsecret_proof'] = hash_hmac('sha256', $fbo['accessToken'], $fbo['appSec']);
       $resP = nxs_remote_get('https://graph.facebook.com/'.$fbo['pgID'].'?'.http_build_query($aacct, null, '&'), $advSet); if ((is_object($resP) && isset($resP->errors))) return 'Error  PG_INFO #1: '.print_r($resP, true);
       $page = json_decode($resP['body'], true); if ( is_array($page) && !empty($page['error']) ) return 'Error PG_INFO #2: '.(!empty($page['error'])?print_r($page['error'], true):''); return $page;
   }
-  function getPageToken($fbo){ $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $appsecret_proof = hash_hmac('sha256', $fbo['accessToken'], $fbo['appSec']); $errMsg = ''; $fbPgID = $fbo['pgID'];      
-      $aacct = array('access_token'=>$fbo['accessToken'], 'appsecret_proof'=>$appsecret_proof, 'method'=>'get', 'limit'=>250);            
+  function getPageToken($fbo){ $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $errMsg = ''; $fbPgID = $fbo['pgID'];      
+      $aacct = array('access_token'=>$fbo['accessToken'], 'method'=>'get', 'limit'=>250); if (empty($fbo['tpt'])) $aacct['appsecret_proof'] = hash_hmac('sha256', $fbo['accessToken'], $fbo['appSec']);
       $res = nxs_remote_get( "https://graph.facebook.com/$fbPgID?fields=access_token&".http_build_query($aacct, null, '&'), $advSet); // prr($res);
       if (is_nxs_error($res) || empty($res['body']) || $res['response']['code']!='200') { $errMsg = "Can't get Page Token. ".print_r($res, true); $fbo['uMsg'] = $errMsg; return $fbo; } else {
         $token = json_decode($res['body'], true); if (empty($token)) { $errMsg =  "Can't get Page Token. JSON Error. ".print_r($res, true); $fbo['uMsg'] = $errMsg; return $fbo; } else {
@@ -90,9 +90,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
   function getListOfPages($networks){ $opVal = array(); $opNm = 'nxs_snap_fb_'.sha1('nxs_snap_fb'.$_POST['u'].$_POST['p']); $opVal = nxs_getOption($opNm); $ii = $_POST['ii']; $pgs = ''; if (empty($options['pgID'])) $options['pgID'] = '';
      $currPstAs = !empty($_POST['pgID'])?$_POST['pgID']:(!empty($networks['fb'][$ii])?$networks['fb'][$ii]['pgID']:'');
      if (empty($_POST['force']) && !empty($opVal['pageList']) ) $pgs = $opVal['pageList']; else { $options = $networks['fb'][$ii];        
-       $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $aacct = array('access_token'=>$options['accessToken'], 'appsecret_proof'=>hash_hmac('sha256', $options['accessToken'], $options['appSec']), 'method'=>'get', 'limit'=>250);       
+       $advSet = nxs_mkRemOptsArr(nxs_getNXSHeaders()); $aacct = array('access_token'=>$options['accessToken'], 'method'=>'get', 'limit'=>250); if (empty($options['tpt'])) $aacct['appsecret_proof'] = hash_hmac('sha256', $options['accessToken'], $options['appSec']); 
        //## Account Info 
-       $resP = nxs_remote_get('https://graph.facebook.com/'.$options['authUser'].'/?'.http_build_query($aacct, null, '&'), $advSet); // prr($resP, 'ACCOUNT'); 
+       $resP = nxs_remote_get('https://graph.facebook.com/'.$options['authUser'].'/?'.http_build_query($aacct, null, '&'), $advSet);  //prr($resP, 'ACCOUNT'); 
        if (is_nxs_error($resP) || empty($resP['body'])) { $outMsg= 'Auth Error Account #1: '.print_r($resP, true);  if (!empty($_POST['isOut'])) echo $outMsg; return $outMsg; }
        $accInfo = json_decode($resP['body'], true); if ((is_array($accInfo) && !empty($accInfo['error']))) { $outMsg = 'Auth Error Account #2: '.print_r($accInfo['error'], true); if (!empty($_POST['isOut'])) echo $outMsg; return $outMsg; }       
        $pgs .= '<option class="nxsTeal" '.($options['pgID']==$accInfo['id'] ? 'selected="selected"':'').' value="'.$accInfo['id'].'">Profile: '.$accInfo['name'].' ('.$accInfo['id'].')</option>'; 
@@ -162,7 +162,9 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
        <?php } else { ?> <div style="width:100%; font-size: 14px;"><b><?php _e('Where to Post', 'nxs_snap'); ?></b><br/><span style="color:#008000">&nbsp;&nbsp;&nbsp;<?php _e('Please enter App ID, App Secret and Authorize Your Account to be able to choose where to post....', 'social-networks-auto-poster-facebook-twitter-g'); ?></span></div>
          <div style="color:#BB2727;" id="nxsFBMsgDiv<?php echo $ii; ?>"><pre><?php if (!empty($options['uMsg'])) echo $options['uMsg']; ?></pre></div> 
        <?php } ?>
-       <?php $this->elemKeySecret($ii,'App ID','App Secret', $options['appKey'], $options['appSec'],'appKey','appSec','https://developers.facebook.com/apps/'); ?><br/><br/><?php $this->elemMsgFormat($ii,'Post Format','msgFormat',$options['msgFormat']); ?>
+       <?php if (!empty($options['tpt'])) { echo '<span style="color:red;">*************'; _e('Third Party Auth Token is used', 'social-networks-auto-poster-facebook-twitter-g'); echo '</span><br/><br/>'; } else { 
+             $this->elemKeySecret($ii,'App ID','App Secret', $options['appKey'], $options['appSec'],'appKey','appSec','https://developers.facebook.com/apps/'); ?><br/><br/><?php $this->elemMsgFormat($ii,'Post Format','msgFormat',$options['msgFormat']); 
+         } ?>
     
       <div style="width:100%;"><strong style="font-size: 16px;" id="altFormatText">Post Type:</strong>&lt;-- (<a id="showShAtt" onmouseout="hidePopShAtt('<?php echo $ii; ?>X');" onmouseover="showPopShAtt('<?php echo $ii; ?>X', event);" onclick="return false;" class="underdash" href="http://www.nextscripts.com/blog/"><?php _e('What\'s the difference?', 'social-networks-auto-poster-facebook-twitter-g'); ?></a>)  </div>                      
 <div style="margin-left: 10px;">
@@ -227,19 +229,36 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
    <?php global $plgn_NS_SNAutoPoster; $gOptions = $plgn_NS_SNAutoPoster->nxs_options; if ( !empty($gOptions['riActive']) && $gOptions['riActive'] == '1' ) { ?>
    <input value="1"  id="apFBMsgAFrmtA<?php echo $ii; ?>" <?php if (!empty($options['riComments']) && trim($options['riComments'])=='1') echo "checked"; ?> type="checkbox" name="fb[<?php echo $ii; ?>][riComments]"/> <strong><?php _e('Import Facebook Comments', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong>
    <br/>
-   <div style="margin-bottom: 5px; margin-left: 10px; ">
-   <input value="1"  id="apFBMsgAFrmtA<?php echo $ii; ?>" <?php if (!empty($options['riCommentsAA']) && trim($options['riCommentsAA'])=='1') echo "checked"; ?> type="checkbox" name="fb[<?php echo $ii; ?>][riCommentsAA]"/> <strong><?php _e('Auto-approve imported comments', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong></div>
    
-   <?php } else { echo "<br/>"; _e('Please activate the "Comments Import" from SNAP Settings Tab', 'social-networks-auto-poster-facebook-twitter-g'); } ?>
+   <div style="margin-bottom: 5px; margin-left: 10px; ">
+     <input value="1"  id="apFBMsgAFrmtA<?php echo $ii; ?>" <?php if (!empty($options['riCommentsAA']) && trim($options['riCommentsAA'])=='1') echo "checked"; ?> type="checkbox" name="fb[<?php echo $ii; ?>][riCommentsAA]"/> <strong><?php _e('Auto-approve imported comments', 'social-networks-auto-poster-facebook-twitter-g'); ?></strong></div>   
+     <?php } else { echo "<br/>"; _e('Please activate the "Comments Import" from SNAP Settings Tab', 'social-networks-auto-poster-facebook-twitter-g'); } ?>
    
    </div>
+   
+   <div style="margin-bottom: 5px; margin-top: 10px; "> <b style="font-size: 16px;"><?php _e('Auth Token:', 'social-networks-auto-poster-facebook-twitter-g'); ?></b><br/>
+   <a href="#" style="margin-left:50px; " class="button" onclick="jQuery(this).next().show(); jQuery(this).hide(); return false;">I understand that this is an unofficial feature.</a>   
+   <div style="margin-bottom: 5px; margin-left: 10px; display: none;"><div style="color:red;">
+   <?php _e('"Third party auth tokens" is an unofficial workaround for the limitations of the standard Facebook API functionality. By using this you are confirming that you understand and agree to:', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/>
+   <div style="color:red; margin-left: 10px; margin-top: 5px; margin-bottom: 10px;">
+   -<?php _e('<b>We do not support</b> or encourage the usage of this feature', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/>
+   -<?php _e('This functionality might not work or might stop working at any time', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/>
+   -<?php _e('Your <b>Facebook account might be suspended</b>', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/>
+   -<?php _e('You are using this feature at your own risk. We are not responsible for any outcome of it\'s usage.', 'social-networks-auto-poster-facebook-twitter-g'); ?><br/></div></div>
+   <a href="#" style="margin-left:50px; " class="button" onclick="jQuery(this).next().show(); jQuery(this).hide(); return false;">I understand that this risky feature is provided "as is" with <b>no support</b> and might not work correctly.</a>   
+   <div style="margin-bottom: 5px; margin-left: 10px; display: none;"> <b style="font-size: 16px;"><?php _e('Auth Token:', 'social-networks-auto-poster-facebook-twitter-g'); ?></b><?php if (empty($options['tpt'])) $options['tpt'] = ''; ?>
+     <input type="text" name="fb[<?php echo $ii; ?>][tpt]" style="width: 40%;border: 1px solid #ACACAC;" value="<?php _e(apply_filters('format_to_edit', htmlentities($options['tpt'], ENT_COMPAT, "UTF-8")), 'social-networks-auto-poster-facebook-twitter-g') ?>" />   
+   </div>   </div>   </div>
+   
    <?php }
   //#### Set Unit Settings from POST
   function setNTSettings($post, $options){ 
     foreach ($post as $ii => $pval){       
       if (!empty($pval['appKey']) && !empty($pval['appKey'])){ if (!isset($options[$ii])) $options[$ii] = array(); $options[$ii] = $this->saveCommonNTSettings($pval,$options[$ii]);
         //## Uniqe Items                
-        
+        if (isset($pval['tpt'])) { $options[$ii]['tpt'] = trim($pval['tpt']);        
+          if (!empty($pval['tpt'])) { $options[$ii]['pageAccessToken'] = trim($pval['tpt']);     $options[$ii]['accessToken'] = trim($pval['tpt']);    $options[$ii]['authUser'] = 'me';   }
+        } else  $options[$ii]['tpt'] = '';
         if (isset($pval['postType'])) $options[$ii]['postType'] = trim($pval['postType']);        
         if (isset($pval['attachInfo'])) $options[$ii]['attachInfo'] = trim($pval['attachInfo']);
         if (isset($pval['attachVideo'])) $options[$ii]['attachVideo'] = trim($pval['attachVideo']);
@@ -278,7 +297,7 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
   
   function showEdPostNTSettings($ntOpts, $post){ $post_id = $post->ID; $nt = $this->ntInfo['lcode']; $ntU = $this->ntInfo['code']; 
       foreach($ntOpts as $ii=>$ntOpt)  { $isFin = $this->checkIfSetupFinished($ntOpt); if (!$isFin) continue;
-        $pMeta = maybe_unserialize(get_post_meta($post_id, 'snap'.$ntU, true)); if (is_array($pMeta) && !empty($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]);         
+        $pMeta = maybe_unserialize(get_post_meta($post_id, 'snap'.$ntU, true)); if (is_array($pMeta) && !empty($pMeta[$ii])) $ntOpt = $this->adjMetaOpt($ntOpt, $pMeta[$ii]);      //   prr($ntOpt);
         
         if (empty($ntOpt['imgToUse'])) $ntOpt['imgToUse'] = ''; if (empty($ntOpt['urlToUse'])) $ntOpt['urlToUse'] = ''; $postType = isset($ntOpt['postType'])?$ntOpt['postType']:'';
         $msgFormat = !empty($ntOpt['msgFormat'])?htmlentities($ntOpt['msgFormat'], ENT_COMPAT, "UTF-8"):''; $msgTFormat = !empty($ntOpt['msgTFormat'])?htmlentities($ntOpt['msgTFormat'], ENT_COMPAT, "UTF-8"):'';
@@ -334,13 +353,12 @@ if (!class_exists("nxs_snapClassFB")) { class nxs_snapClassFB extends nxs_snapCl
     $message['urlTitle'] = $this->fixFBMsgs($message['urlTitle']); $message['urlDescr'] = $this->fixFBMsgs($message['urlDescr']); $options['msgFormat'] = $this->fixFBMsgs($options['msgFormat']);
   }  
   
-}}
-
-
-if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments($postID, $options, $po) { $ci = 0;  if (empty($options['fbAppPageAuthToken'])) return;    
-    $options['appsecret_proof'] = hash_hmac('sha256', $options['fbAppPageAuthToken'], $options['fbAppSec']);    $wprg = array('sslverify'=>false, 'timeout' => 30);  
-    $aacct = array('access_token'=>$options['fbAppPageAuthToken'], 'appsecret_proof'=>$options['appsecret_proof'], 'method'=>'get');  $ptype =  get_post_type( $postID ); 
-    $res = nxs_remote_get( "https://graph.facebook.com/v2.3/".$po['pgID']."/comments?filter=toplevel&limit=250&".http_build_query($aacct, null, '&'), $wprg); 
+  function importComments($options='', $postID='', $po) { $ci = 0; if (empty($postID)) $postID = $_POST['pid'];
+    if (empty($options)) {  global $plgn_NS_SNAutoPoster; $options = $plgn_NS_SNAutoPoster->nxs_options; } if (isset($_POST['ii'])) $options = $options[$_POST['nt']][$_POST['ii']];  
+    if (empty($po)) { $po =  maybe_unserialize(get_post_meta($postID, 'snap'.strtoupper($_POST['nt']), true)); $po = $po[$_POST['ii']]; }    
+    if (empty($options) || empty($options['pageAccessToken'])) return; $ptype =  get_post_type( $postID );     
+    $aacct = array('access_token'=>$options['pageAccessToken'], 'method'=>'get'); if (empty($options['tpt'])) $aacct['appsecret_proof'] = hash_hmac('sha256', $options['pageAccessToken'], $options['appSec']);
+    $res = nxs_remote_get( "https://graph.facebook.com/v2.3/".$po['pgID']."/comments?filter=toplevel&limit=250&".http_build_query($aacct, null, '&'), nxs_mkRemOptsArr(nxs_getNXSHeaders()));
     if (is_nxs_error($res) || empty($res['body'])) $badOut['Error'] = ' [ERROR] '.print_r($res, true); else { //prr($res);
     $ret = json_decode($res['body'], true); if (empty($ret)) $badOut['Error'] .= "JSON ERROR: ".print_r($res, true); else { //   prr($ret);    
       $impCmnts = get_post_meta($postID, 'snapImportedFBComments', true); if (!is_array($impCmnts)) $impCmnts = array(); //prr($impCmnts);   
@@ -356,7 +374,7 @@ if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments(
             $wpCid = nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); // prr($commentdata);
           } $ci++; $impCmnts[$wpCid] = 'fbxcw'.$cid; 
       } else $wpCid = array_search('fbxcw'.$cid, $impCmnts);            
-      $res = nxs_remote_get( "https://graph.facebook.com/v2.3/".$cid."/comments?".http_build_query($aacct, null, '&'), $wprg); $replRet = json_decode($res['body'], true);
+      $res = nxs_remote_get( "https://graph.facebook.com/v2.3/".$cid."/comments?".http_build_query($aacct, null, '&'), nxs_mkRemOptsArr(nxs_getNXSHeaders())); $replRet = json_decode($res['body'], true);
       if (is_array($replRet) && is_array($replRet['data'])) foreach ($replRet['data'] as $rComment){ $rCid = $rComment['id']; 
         if (!empty($rCid) && !empty($comment['message']) && !in_array('fbxcw'.$rCid, $impCmnts)) {  // prr($impCmnts);          
           if ($ptype=='topic'){ $my_post = array('post_title' => '', 'post_content' => $rComment['message'], 'post_status' => 'publish', 'post_parent' => $postID, 'post_author' => 0, 'post_type' => 'reply');
@@ -374,9 +392,14 @@ if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments(
     }    
     delete_post_meta($postID, 'snapImportedFBComments'); add_post_meta($postID, 'snapImportedFBComments', $impCmnts ); 
     //## if Importing manually from Button echo result.
-    if (isset($_POST['id']) && $_POST['id']!='') printf( _n( '%d comment has been imported.', '%d comments has been imported.', $ci, 'social-networks-auto-poster-facebook-twitter-g'), $ci );
+    if (isset($_POST['pid']) && $_POST['pid']!='') printf( _n( '%d comment has been imported.', '%d comments has been imported.', $ci, 'social-networks-auto-poster-facebook-twitter-g'), $ci );
    }}
+  }
+  
 }}
+
+
+//if (!function_exists("nxs_getBackFBComments")) { function nxs_getBackFBComments}}
 // ShortCode [nxs_fbembed accnum=0]
 if (!function_exists("nxs_fbembed_func")) {function nxs_fbembed_func( $atts ) { extract( shortcode_atts( array('accnum' => '0'), $atts ) );  $pid = get_the_ID(); $fbpo =  get_post_meta($pid, 'snapFB', true); $fbpo =  maybe_unserialize($fbpo);     
   if (!is_array($fbpo) || !is_array($fbpo[$accnum]) || !isset($fbpo[$accnum]['pgID']) || strpos($fbpo[$accnum]['pgID'], '_')===false ) return; $fbpo = $fbpo[$accnum]['pgID']; 

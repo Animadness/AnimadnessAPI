@@ -25,7 +25,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR extends nxs_snapCl
   //#### Show NEW Settings Page
   function showNewNTSettings($ii){ $defO = array('nName'=>'', 'do'=>'1', 'appKey'=>'', 'appSec'=>'', 'cImgURL'=>1, 'msgTFormat'=>"%TITLE%", 'msgFormat'=>"<p>New Post has been published on %URL%</p>\r\n<blockquote><p><strong>%TITLE%</strong></p>\r\n<p><img src=\"%IMG%\"/></p><p>%FULLTEXT%</p></blockquote>",  'trURL'=>'', 'postDate'=>'', 'imgSize'=>'', 'postType'=>''); $this->showGNewNTSettings($ii, $defO); }
   //#### Show Unit  Settings  
-  function checkIfSetupFinished($options) { return !empty($options['trURL']) && !empty($options['accessToken']); }
+  function checkIfSetupFinished($options) { return !empty($options['pgID']) && !empty($options['accessToken']); }
   public function doAuth() { $ntInfo = $this->ntInfo; global $nxs_snapSetPgURL;     
     if ( isset($_GET['auth']) && $_GET['auth']=='tr'){ $this->showAuthTop(); require_once('apis/trOAuth.php'); $options = $this->nt[$_GET['acc']]; 
       $consumer_key = $options['appKey']; $consumer_secret = $options['appSec']; $callback_url = $nxs_snapSetPgURL."&auth=tra&acc=".$_GET['acc'];
@@ -45,7 +45,7 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR extends nxs_snapCl
       $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info'); prr($tum_oauth, '**tum_oauth ==2== **'); prr($userinfo, '**USERINFO**'); // prr($url); die();
       if ($userinfo->meta->status=='401') die("<span style='color:red;'>ERROR #1: Authorized USER don't have access to the specified blog: <span style='color:darkred; font-weight: bold;'>".$options['pgID']."</span></span></div>");
       if (is_array($userinfo->response->user->blogs)) { $options['authUser'] = $userinfo->response->user->name; $blogs = ''; $opNm = 'nxs_snap_tr_'.sha1('nxs_snap_tr'.$options['authUser'].$options['appKey']);
-        foreach ($userinfo->response->user->blogs as $blog){         
+        foreach ($userinfo->response->user->blogs as $blog){ if (empty($options['pgID'])) $options['pgID'] = $blog->uuid;
           $blogs .= '<option '.($options['pgID']==$blog->uuid ? 'selected="selected"':'').' value="'.$blog->uuid.'">'.$blog->name.' ('.$blog->uuid.')</option>'; 
         } nxs_save_glbNtwrks($ntInfo['lcode'],$_GET['acc'],$options,'*'); $opVal['blogList'] = $blogs;  nxs_saveOption($opNm, $opVal);       
         echo '<div style="text-align:center;color:green; font-weight: bold; font-size:22px;" >ALL OK. You have been authorized. Refreshing page....</div><script type="text/javascript">setTimeout(function(){ window.location = "'.$nxs_snapSetPgURL.'"; }, 3000);</script>'; die('</div></div>');
@@ -59,8 +59,8 @@ if (!class_exists("nxs_snapClassTR")) { class nxs_snapClassTR extends nxs_snapCl
        $tum_oauth = new TumblrOAuth($options['appKey'], $options['appSec'],  $options['accessToken'], $options['accessTokenSec']); $userinfo = $tum_oauth->get('http://api.tumblr.com/v2/user/info');
        if ($userinfo->meta->status=='401') { $outMsg = '<b style="color:red;">'.__('Auth Problem').' HTTP-401 (Not Authorized) &nbsp;-&nbsp;</b>'; if (!empty($_POST['isOut'])) echo $outMsg; return $outMsg; }
        if (is_array($userinfo->response->user->blogs)) { $options['authUser'] = $userinfo->response->user->name; $pgs = ''; 
-        foreach ($userinfo->response->user->blogs as $blog){         
-          $pgs .= '<option '.($options['pgID']==$blog->uuid ? 'selected="selected"':'').' value="'.$blog->uuid.'">'.$blog->name.' ('.$blog->uuid.')</option>';       
+        foreach ($userinfo->response->user->blogs as $blog){ $res = nxs_remote_get( "https://api.tumblr.com/v2/blog/".$blog->uuid."/info?api_key=".$options['appKey'], nxs_mkRemOptsArr(nxs_getNXSHeaders())); $replRet = json_decode($res['body'], true); 
+          if (!empty($replRet) && !empty($replRet['meta']) && $replRet['meta']['status']=='200') $pgs .= '<option '.($options['pgID']==$blog->uuid ? 'selected="selected"':'').' value="'.$blog->uuid.'">'.$blog->name.' ('.$blog->uuid.')</option>';       
         }
        } else { $outMsg = '<b style="color:red;">'.__('Auth Problem').' #2&nbsp;-&nbsp;'.$loginError.'</b>'; if (!empty($_POST['isOut'])) echo $outMsg; return $outMsg; }
      } $pgCust = (!empty($pgs) && !empty($currPstAs) && stripos($pgs,$currPstAs)===false)?'<option selected="selected" value="'.$currPstAs.'">'.$currPstAs.'</option>':'';     

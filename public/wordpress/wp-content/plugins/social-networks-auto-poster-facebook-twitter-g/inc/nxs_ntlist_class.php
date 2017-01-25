@@ -182,6 +182,8 @@ if (!class_exists('nxs_snapClassNT')) { class nxs_snapClassNT {
       if (isset($pval['proxyOn'])) $o['proxyOn'] = trim($pval['proxyOn']); else $o['proxyOn'] = 0;  //prr($o);
       if (isset($pval['proxy']))   $o['proxy']['proxy'] = trim($pval['proxy']); 
       if (isset($pval['proxyup'])) $o['proxy']['up'] = trim($pval['proxyup']);
+      //## Image Selection      
+      if (isset($pval['wpImgSize'])) $o['wpImgSize'] = trim($pval['wpImgSize']); 
       //##
       if (!empty($pval['nxs_ie_tags_names'])) $o['fltrs']['nxs_ie_tags_names'] = $pval['nxs_ie_tags_names'];
       if (isset($pval['nxs_tags_names'])) { foreach ($pval['nxs_tags_names'] as $jj=>$tag) { $exT=''; if (is_numeric($tag)) $exT = term_exists((int)$tag, 'post_tag'); else $exT = term_exists($tag, 'post_tag'); 
@@ -257,7 +259,7 @@ if (!class_exists('nxs_snapClassNT')) { class nxs_snapClassNT {
         <input alt="<?php echo $ii; ?>" style="float: right;" onmouseout="hidePopShAtt('SV');" onmouseover="showPopShAtt('SV', event);" onclick="return false;" data-ntname="<?php echo $ntName; ?>" type="button" class="button manualPostBtn" name="<?php echo $nt."-".$post->ID; ?>" value="<?php _e('Post to ', 'social-networks-auto-poster-facebook-twitter-g'); echo $ntName; ?>" />
     
       <?php if (!empty($ntOpt['riComments']) && $ntOpt['riComments']=='1' && is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii]) && !empty($pMeta[$ii]['pgID'])) { ?>
-      <input alt="<?php echo $ii; ?>" style="float: right; " onclick="return false;" type="button" class="button" name="riTo<?php echo $ntU; ?>_repostButton" value="<?php _e('Import Comments/Replies', 'nxs_snap') ?>" />
+      <input style="float: right; " onclick="return false;" type="button" data-ii="<?php echo $ii; ?>" data-pid="<?php echo $post->ID; ?>" data-nt="<?php echo $nt; ?>" class="button riTo_button" value="<?php _e('Import Comments/Replies', 'nxs_snap') ?>" />
       <?php } ?>
         <?php  if (is_array($pMeta) && isset($pMeta[$ii]) && is_array($pMeta[$ii]) && !empty($pMeta[$ii]['pgID'])) { ?> <span style="float: right;padding-top: 4px; padding-right: 10px;">
           <a id="pstd<?php echo $ntU; ?><?php echo $ii; ?>" style="font-size: 10px;" href="<?php echo $pMeta[$ii]['postURL'];  ?>" target="_blank"><?php printf( __( 'Posted on', 'nxs_snap' ), $ntName); ?>  <?php echo (isset($pMeta[$ii]['pDate']) && $pMeta[$ii]['pDate']!='')?(nxs_adjTime($pMeta[$ii]['pDate'])):""; ?></a>
@@ -279,7 +281,7 @@ if (!class_exists('nxs_snapClassNT')) { class nxs_snapClassNT {
       if (isset($pMeta['postType'])) $optMt['postType'] = $pMeta['postType']; 
       if (isset($pMeta['timeToRun']))  $optMt['timeToRun'] = $pMeta['timeToRun']; $optMt['do'] = 0;  
       if (isset($pMeta['do'])) $optMt['do'] = $pMeta['do']; else { if (isset($pMeta['msgFormat'])) $optMt['do'] = 0; }  // What is that?
-      $optMt['do'.$this->ntInfo['code']] = $optMt['do']; //V3 COMP CHANGE
+      if (isset($optMt['do'.$this->ntInfo['code']])) unset($optMt['do'.$this->ntInfo['code']]); //prr($optMt); die();
       return $optMt;                    
     } 
     
@@ -288,9 +290,7 @@ if (!class_exists('nxs_snapClassNT')) { class nxs_snapClassNT {
     public function ajaxPost() { check_ajax_referer('nxsSsPageWPN');  $postID = $_POST['id'];  $nt = $this->ntInfo['lcode']; $ntU = $this->ntInfo['code']; $ntName = $this->ntInfo['name']; $options = get_option('NS_SNAutoPoster');  
       foreach ($options[$nt] as $ii=>$nto) if ($ii==$_POST['nid']) {  $nto['ii'] = $ii; $nto['pType'] = 'aj';  $po =  get_post_meta($postID, 'snap'.$ntU, true); $po =  maybe_unserialize($po); $clName = 'nxs_snapClass'.$ntU; $ntClInst = new $clName();
         if (is_array($po) && isset($po[$ii]) && is_array($po[$ii])){ $nto = $ntClInst->adjMetaOpt($nto, $po[$ii]); } 
-        if (isset($_POST['ri']) && $_POST['ri']=='1') { nxs_getBackFBComments($postID, $nto, $po[$ii]); $twList = nxs_getBackTWCommentsList($nto);  nxs_getBackTWComments($postID, $nto, $twpo[$ii], $twList); die(); } else {
-          $result = $this->publish($postID, $nto); if ($result == '200') die("Your post has been successfully sent to ".$ntName); else die($result);
-        }
+        $result = $this->publish($postID, $nto); if ($result == '200') die("Your post has been successfully sent to ".$ntName); else die($result);        
       }
     }
     

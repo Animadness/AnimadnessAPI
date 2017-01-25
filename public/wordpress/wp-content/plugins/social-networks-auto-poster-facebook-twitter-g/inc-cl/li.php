@@ -94,7 +94,7 @@ if (!class_exists("nxs_snapClassLI")) { class nxs_snapClassLI extends nxs_snapCl
     } 
   }    
   
-  function getListOfPagesLIV2($networks){ $opVal = array(); $opNm = 'nxs_snap_li_'.sha1('nxs_snap_li'.$_POST['u'].$_POST['p']); $opVal = nxs_getOption($opNm); $ii = $_POST['ii']; 
+  function getListOfPagesLIV2($networks){ $opVal = array(); if (empty($_POST['u'])) return $opVal; $opNm = 'nxs_snap_li_'.sha1('nxs_snap_li'.$_POST['u'].$_POST['p']); $opVal = nxs_getOption($opNm); $ii = $_POST['ii']; if (empty($networks['li'][$ii]['accessToken'])) return $opVal;
      $currPstAs = !empty($_POST['pgID'])?$_POST['pgID']:(!empty($networks['li'][$ii])?$networks['li'][$ii]['pgID']:'');
      if (empty($_POST['force']) && !empty($opVal['pgList']) ) $pgs = $opVal['pgList']; else { $options = $networks['li'][$ii]; 
         $gURL = 'https://api.linkedin.com/v1/companies?format=json&is-company-admin=true&oauth2_access_token='.$options['accessToken']; $response = nxs_remote_get( $gURL, nxs_mkRemOptsArr(nxs_getNXSHeaders()) ); 

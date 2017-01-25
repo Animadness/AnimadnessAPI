@@ -104,11 +104,12 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW extends nxs_snapCl
     
     $post = get_post($postID); if(!$post) return; $twMsgFormat = $options['msgFormat']; $extInfo = ' | PostID: '.$postID." - ".$post->post_title.' |'.$options['pType'];        
         if (stripos($twMsgFormat, '%URL%')!==false || stripos($twMsgFormat, '%SURL%')!==false) $twLim = $twLim - 23; 
-        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - nxs_strLen($aun); }         
+        if (stripos($twMsgFormat, '%AUTHORNAME%')!==false) { $aun = $post->post_author;  $aun = get_the_author_meta('display_name', $aun ); $twLim = $twLim - nxs_strLen($aun); }
         $noRepl = str_ireplace("%TITLE%", "", $twMsgFormat); $noRepl = str_ireplace("%SITENAME%", "", $noRepl); $noRepl = str_ireplace("%URL%", "", $noRepl);$noRepl = str_ireplace("%RAWEXCERPT%", "", $noRepl); 
-        $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);$noRepl = str_ireplace("%EXCERPT%", "", $noRepl);
-        $noRepl = str_ireplace("%ANNOUNCE%", "", $noRepl); $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl);  $noRepl = str_ireplace("%TAGS%", "", $noRepl); $noRepl = str_ireplace("%CATS%", "", $noRepl);        
-        $noRepl = preg_replace('/%H?C(F|T)-[a-zA-Z0-9_]+%/', '', $noRepl); $twLim = $twLim - nxs_strLen($noRepl); if (stripos($noRepl, 'http')!==false) $twLim = $twLim - 5;// prr($noRepl);
+        $noRepl = str_ireplace("%SURL%", "", $noRepl);$noRepl = str_ireplace("%TEXT%", "", $noRepl);$noRepl = str_ireplace("%FULLTEXT%", "", $noRepl);$noRepl = str_ireplace("%EXCERPT%", "", $noRepl); 
+        $noRepl = str_ireplace("%ANNOUNCE%", "", $noRepl); $noRepl = str_ireplace("%AUTHORNAME%", "", $noRepl);  $noRepl = str_ireplace("%TAGS%", "", $noRepl); $noRepl = str_ireplace("%CATS%", "", $noRepl);         
+        $noRepl = str_ireplace("%HTAGS%", "", $noRepl); $noRepl = str_ireplace("%HCATS%", "", $noRepl);
+        $noRepl = preg_replace('/%H?C(F|T)-[a-zA-Z0-9_]+%/', '', $noRepl); $twLim = $twLim - nxs_strLen($noRepl); if (stripos($noRepl, 'http')!==false) $twLim = $twLim - 5;
         $pTitle = nxs_doQTrans($post->post_title); if ($post->post_excerpt!="") $exrText = nxs_doQTrans($post->post_excerpt); else $exrText= nxs_doQTrans($post->post_content); 
         $pText = (empty($gOptions['brokenCntFilters']))?apply_filters('the_content', $exrText):$exrText;      
         $pRawText = nxs_doQTrans($post->post_content); $pFullText = (empty($gOptions['brokenCntFilters']))?apply_filters('the_content', $pRawText):$pRawText;  
@@ -126,8 +127,8 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW extends nxs_snapCl
                    ((stripos($twMsgFormat, '%ANNOUNCE%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pText)) ||
                    ((stripos($twMsgFormat, '%FULLTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pFullText)) ||
                    ((stripos($twMsgFormat, '%RAWTEXT%')!==false) && preg_match('/\b'.$frmTag.'\b/i', $pRawText)) ) {} else $tggs[] = '#'.$frmTag;
-          } $tags = implode(' ', $tggs); $tgsTwLim = $twLim-50; $tags = nsTrnc($tags, $tgsTwLim, " ", ""); $twMsgFormat = str_ireplace("%XTAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
-          $twLim = $twLim - nxs_strLen($tags);
+          } $tags = implode(' ', $tggs); $tgsTwLim = $twLim-45; $tags = nsTrnc($tags, $tgsTwLim, " ", ""); $twMsgFormat = str_ireplace("%XTAGS%", $tags, $twMsgFormat);  $twMsgFormat = str_ireplace("%HTAGS%", $tags, $twMsgFormat);
+          $twLim = $twLim - nxs_strLen($tags); 
         } 
         if (stripos($twMsgFormat, '%XCATS%')!==false || stripos($twMsgFormat, '%HCATS%')!==false) {
           $t = wp_get_post_categories($postID); $ctts = array();  foreach($t as $c){ $cat = get_category($c); //$frmTag =  trim(str_replace(' ','', str_replace('  ',' ',str_ireplace('&','&amp;',trim(ucwords($cat->name)))))); prr($frmTag);
@@ -161,7 +162,7 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW extends nxs_snapCl
            if (stripos($pTitle, '.com')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.net')!==false) $twLim = $twLim - 16; if (stripos($pTitle, '.org')!==false) $twLim = $twLim - 16;
            $pTitle = html_entity_decode(strip_tags($pTitle), ENT_NOQUOTES, 'UTF-8'); //$ttlTwLim = $twLim-20;                      
            $ttlTwLim = $twLim; $pTitle = nsTrnc($pTitle, $ttlTwLim); $twMsgFormat = str_ireplace("%TITLE%", $pTitle, $twMsgFormat); $twLim = $twLim - nxs_strLen($pTitle);            
-        } 
+        } // prr($twMsgFormat); prr($twLim);
         if (stripos($twMsgFormat, '%SITENAME%')!==false) {
           $siteTitle = htmlspecialchars_decode(get_bloginfo('name'), ENT_QUOTES); $siteTitle = nsTrnc($siteTitle, $twLim); $twMsgFormat = str_ireplace("%SITENAME%", $siteTitle, $twMsgFormat); $twLim = $twLim - nxs_strLen($siteTitle);
         }     
@@ -201,31 +202,29 @@ if (!class_exists("nxs_snapClassTW")) { class nxs_snapClassTW extends nxs_snapCl
     
   }   
   
-}}
-
-if (!function_exists("nxs_doPublishToTW")) { function nxs_doPublishToTW($postID, $options){ if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true)); $cl = new nxs_snapClassTW(); $cl->nt[$options['ii']] = $options; return $cl->publishWP($options['ii'], $postID); }} 
-
-//## TW Specific Functions
-if (!function_exists("nxs_getBackTWCommentsList")) { function nxs_getBackTWCommentsList($options) { 
-  require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));
-  $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/statuses/mentions_timeline')); 
-  if ($code=='200' && isset($tmhOAuth->response['response']) ) { $tweets = json_decode($tmhOAuth->response['response'], true); if (is_array($tweets)) return $tweets; } return false; 
-}}
-
-if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments($postID, $options, $po, $twList) { $impCmnts = get_post_meta($postID, 'snapImportedComments', true);  
-    if(!is_array($impCmnts)) $impCmnts = array(); $twsToImp = array(); $lastID = '';
+  function importComments($options='', $postID='', $po='') { if (empty($postID)) $postID = $_POST['pid']; 
+    if (empty($options)) {  global $plgn_NS_SNAutoPoster; $options = $plgn_NS_SNAutoPoster->nxs_options; }
+    if (empty($po)) { $po =  maybe_unserialize(get_post_meta($postID, 'snap'.strtoupper($_POST['nt']), true)); $po = $po[$_POST['ii']]; }
+    if (isset($_POST['ii'])) $options = $options[$_POST['nt']][$_POST['ii']];  
+    
+    require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['appKey'], 'consumer_secret' => $options['appSec'], 'user_token' => $options['accessToken'], 'user_secret' => $options['accessTokenSec']));
+    $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/statuses/mentions_timeline')); 
+    if ($code=='200' && isset($tmhOAuth->response['response']) ) $twList = json_decode($tmhOAuth->response['response'], true); else $twList = ''; 
+     
+    $impCmnts = get_post_meta($postID, 'snapImportedComments', true); 
+    if(!is_array($impCmnts)) $impCmnts = array(); $twsToImp = array(); $lastID = '';  
     //## Do Replies
     if (!empty($twList) && is_array($twList)) foreach ($twList as $tw) if ($tw['in_reply_to_status_id_str'] == $po['pgID']) $twsToImp[] = $tw;
     if (!empty($twList) && is_array($twsToImp) && count($twsToImp)>0)
-      foreach ($twsToImp as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'twxcw'.$cid;  // prr($impCmnts);
+      foreach ($twsToImp as $comment){ $cid = $comment['id_str']; if (trim($cid)=='' || in_array('twxcw'.$cid, $impCmnts)) continue; else $impCmnts[] = 'twxcw'.$cid;  
         $commentdata = array( 'comment_post_ID' => $postID, 'comment_author' => $comment['user']['name'], 'comment_agent' => "SNAP||".str_ireplace('_normal.','_bigger.',$comment['user']['profile_image_url_https']), 
           'comment_author_email' => $comment['user']['screen_name'].'@twitter.com', 'comment_author_url' => 'http://twitter.com/'.$comment['user']['screen_name'], 
           'comment_content' => str_ireplace('@'.$comment['in_reply_to_screen_name'],'', $comment['text']), 'comment_date_gmt' => date('Y-m-d H:i:s', strtotime( $comment['created_at'] ) ), 'comment_type' => '');
-        nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
+        nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++; echo $ci;
       }     
-      
+     
     //## Do mentions.
-    require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['twConsKey'], 'consumer_secret' => $options['twConsSec'], 'user_token' => $options['twAccToken'], 'user_secret' => $options['twAccTokenSec']));    
+    require_once ('apis/tmhOAuth.php'); $tmhOAuth = new NXS_tmhOAuth(array( 'consumer_key' => $options['appKey'], 'consumer_secret' => $options['appSec'], 'user_token' => $options['accessToken'], 'user_secret' => $options['accessTokenSec']));    
     if (isset($options['urlToUse']) && trim($options['urlToUse'])!='') $urlToSrch = $options['urlToUse']; else $urlToSrch = get_permalink($postID);     
     $code = $tmhOAuth->request('GET', $tmhOAuth->url('1.1/search/tweets'), array('rpp'=>'100', 'since_id'=>$lastID, 'q'=> urlencode($urlToSrch)));       
     if ($code=='200' && isset($tmhOAuth->response['response']) ) { $tweets = json_decode($tmhOAuth->response['response'], true); //prr($tweets);
@@ -237,8 +236,17 @@ if (!function_exists("nxs_getBackTWComments")) { function nxs_getBackTWComments(
         nxs_postNewComment($commentdata, $options['riCommentsAA']=='1'); $ci++;
       }
     }}
-    delete_post_meta($postID, 'snapImportedComments'); add_post_meta($postID, 'snapImportedComments', $impCmnts ); 
-    if ( isset($_POST['id']) && $_POST['id']!='') printf( _n('%d comment has been imported.', '%d comments has been imported.', $ci, 'social-networks-auto-poster-facebook-twitter-g'), $ci );
+    delete_post_meta($postID, 'snapImportedComments'); add_post_meta($postID, 'snapImportedComments', $impCmnts );
+    if ( isset($_POST['pid']) && $_POST['pid']!='') printf( _n('%d comment has been imported.', '%d comments has been imported.', $ci, 'social-networks-auto-poster-facebook-twitter-g'), $ci );
+  }
+  
+}}
+
+if (!function_exists("nxs_doPublishToTW")) { function nxs_doPublishToTW($postID, $options){ if (!is_array($options)) $options = maybe_unserialize(get_post_meta($postID, $options, true)); $cl = new nxs_snapClassTW(); $cl->nt[$options['ii']] = $options; return $cl->publishWP($options['ii'], $postID); }} 
+
+//## TW Specific Functions
+if (!function_exists("nxs_getBackTWCommentsList")) { function nxs_getBackTWCommentsList($options) { 
+  
 }}
 
 ?>

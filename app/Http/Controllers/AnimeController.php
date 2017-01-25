@@ -16,6 +16,7 @@ class AnimeController extends Controller
     public function approve(Request $request) {
         // Make Blog Post Draft
         $title = 'Watch '.$request->input('anime', '').' now on Animadness';
+        $link = env('APP_SITE', 'https://animadness.net').'/#/anime/'.$request->input('id');
         $post = $request->input('blog') ? Post::find($request->input('blog')) : new Post;
         $post->post_author = $request->input('author', 1);
         $post->post_type = $request->input('type', 'post');
@@ -23,11 +24,12 @@ class AnimeController extends Controller
         $post->post_title = $request->input('title', $title);
         $post->post_name = $request->input('name', str_replace('.', '-', str_replace(' ', '-', strtolower($title))));
         $post->post_content = $request->input('content') ? urldecode($request->input('content')) : '';
-        if ($request->input('date')) {
-            $post->post_date =  Carbon::parse($request->input('date'))->tz('-6');
-            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('-6');
+        if ($request->input('date') && Carbon::now()->lt(Carbon::parse($request->input('date')))) {
+            $post->post_date =  Carbon::parse($request->input('date'));
+            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('+6');
         } else {
-            $post->post_date = $post->post_date_gmt = Carbon::now()->tz('UTC');
+            $post->post_date = Carbon::now()->addMinutes(5);
+            $post->post_date_gmt = Carbon::now()->tz('+6')->addMinutes(5);
         }
         $post->save();
 
@@ -54,10 +56,31 @@ class AnimeController extends Controller
             $termRelation->save();
         }
 
+        // Set Basic SNAP Meta
+        if (!$request->input('blog')) {
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = '_snap_forceSURL';
+            $postMeta->meta_value = 1;
+            $postMeta->save();
+            
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = 'snap_MYURL';
+            $postMeta->meta_value = $link;
+            $postMeta->save();
+
+            $postMeta = new PostMeta;
+            $postMeta->post_id = $post->ID;
+            $postMeta->meta_key = 'snapEdIT';
+            $postMeta->meta_value = 1;
+            $postMeta->save();
+        }
+
         // Format Social Posts
         $snapPost = [
             "do" => 1,
-            "msgFormat" => "%TITLE%\rhttps://animadness.net/#/anime/".$request->input('id')."\r\n\r\n%FULLTEXT%",
+            "msgFormat" => "%TITLE%\r%SURL%\r\n\r\n%FULLTEXT%",
             "postType" => "I",
             "isAutoImg" => "A",
             "imgToUse" => "",
@@ -93,7 +116,7 @@ class AnimeController extends Controller
 
         // Set Twitter Social Post
         $twitterPost = $snapPost;
-        $twitterPost['msgFormat'] = $request->input('tweet', '%TITLE%') . "\rhttps://animadness.net/#/anime/".$request->input('id');
+        $twitterPost['msgFormat'] = $request->input('tweet', '%TITLE%') . "\r%SURL%";
         $twitterPost['attchImg'] = 1;
         $twitterPost['doTW'] = 1;
         if (!$request->input('blog')) {
