@@ -2,6 +2,35 @@
 require_once(__DIR__ . '/../../vendor/autoload.php');
 if (!class_exists('Dotenv\Dotenv')) {
 	(new \Dotenv\Dotenv(__DIR__.'/../../'))->load();
+	$APP_DEBUG = getenv('APP_DEBUG');
+	$DB_NAME = getenv('DB_DATABASE');
+	$DB_USER = getenv('DB_USERNAME');
+	$DB_PASSWORD = getenv('DB_PASSWORD');
+	$DB_HOST = getenv('DB_HOST');
+	$DB_PREFIX = getenv('DB_PREFIX');
+	$WP_AUTH_KEY = getenv('WP_AUTH_KEY');
+	$WP_SECURE_AUTH_KEY = getenv('WP_SECURE_AUTH_KEY');
+	$WP_LOGGED_IN_KEY = getenv('WP_LOGGED_IN_KEY');
+	$WP_NONCE_KEY = getenv('WP_NONCE_KEY');
+	$WP_AUTH_SALT = getenv('WP_AUTH_SALT');
+	$WP_SECURE_AUTH_SALT = getenv('WP_SECURE_AUTH_SALT');
+	$WP_LOGGED_IN_SALT = getenv('WP_LOGGED_IN_SALT');
+	$WP_NONCE_SALT = getenv('WP_NONCE_SALT');
+} else {
+	$APP_DEBUG = env('APP_DEBUG');
+	$DB_NAME = env('DB_DATABASE');
+	$DB_USER = env('DB_USERNAME');
+	$DB_PASSWORD = env('DB_PASSWORD');
+	$DB_HOST = env('DB_HOST');
+	$DB_PREFIX = env('DB_PREFIX');
+	$WP_AUTH_KEY = env('WP_AUTH_KEY');
+	$WP_SECURE_AUTH_KEY = env('WP_SECURE_AUTH_KEY');
+	$WP_LOGGED_IN_KEY = env('WP_LOGGED_IN_KEY');
+	$WP_NONCE_KEY = env('WP_NONCE_KEY');
+	$WP_AUTH_SALT = env('WP_AUTH_SALT');
+	$WP_SECURE_AUTH_SALT = env('WP_SECURE_AUTH_SALT');
+	$WP_LOGGED_IN_SALT = env('WP_LOGGED_IN_SALT');
+	$WP_NONCE_SALT = env('WP_NONCE_SALT');
 }
 
 
@@ -26,16 +55,16 @@ if (!class_exists('Dotenv\Dotenv')) {
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', getenv('DB_DATABASE'));
+define('DB_NAME', $DB_NAME);
 
 /** MySQL database username */
-define('DB_USER', getenv('DB_USERNAME'));
+define('DB_USER', $DB_USER);
 
 /** MySQL database password */
-define('DB_PASSWORD', getenv('DB_PASSWORD'));
+define('DB_PASSWORD', $DB_PASSWORD);
 
 /** MySQL hostname */
-define('DB_HOST', getenv('DB_HOST'));
+define('DB_HOST', $DB_HOST);
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8mb4');
@@ -52,14 +81,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define('AUTH_KEY',         getenv('WP_AUTH_KEY'));
-define('SECURE_AUTH_KEY',  getenv('WP_SECURE_AUTH_KEY'));
-define('LOGGED_IN_KEY',    getenv('WP_LOGGED_IN_KEY'));
-define('NONCE_KEY',        getenv('WP_NONCE_KEY'));
-define('AUTH_SALT',        getenv('WP_AUTH_SALT'));
-define('SECURE_AUTH_SALT', getenv('WP_SECURE_AUTH_SALT'));
-define('LOGGED_IN_SALT',   getenv('WP_LOGGED_IN_SALT'));
-define('NONCE_SALT',       getenv('WP_NONCE_SALT'));
+define('AUTH_KEY',         $WP_AUTH_KEY);
+define('SECURE_AUTH_KEY',  $WP_SECURE_AUTH_KEY);
+define('LOGGED_IN_KEY',    $WP_LOGGED_IN_KEY);
+define('NONCE_KEY',        $WP_NONCE_KEY);
+define('AUTH_SALT',        $WP_AUTH_SALT);
+define('SECURE_AUTH_SALT', $WP_SECURE_AUTH_SALT);
+define('LOGGED_IN_SALT',   $WP_LOGGED_IN_SALT);
+define('NONCE_SALT',       $WP_NONCE_SALT);
 
 /**#@-*/
 
@@ -69,7 +98,7 @@ define('NONCE_SALT',       getenv('WP_NONCE_SALT'));
  * You can have multiple installations in one database if you give each
  * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = getenv('DB_PREFIX');
+$table_prefix  = $DB_PREFIX;
 
 /**
  * For developers: WordPress debugging mode.
@@ -83,7 +112,7 @@ $table_prefix  = getenv('DB_PREFIX');
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define('WP_DEBUG', getenv('APP_DEBUG'));
+define('WP_DEBUG', $APP_DEBUG);
 
 /* That's all, stop editing! Happy blogging. */
 
