@@ -1,6 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../vendor/autoload.php');
-(new \Dotenv\Dotenv(__DIR__.'/../../'))->load();
+if (!class_exists('Dotenv')) {
+	(new \Dotenv\Dotenv(__DIR__.'/../../'))->load();
+}
+
 
 /**
  * The base configuration for WordPress
