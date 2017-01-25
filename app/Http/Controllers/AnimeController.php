@@ -24,10 +24,8 @@ class AnimeController extends Controller
         $post->post_name = $request->input('name', str_replace('.', '-', str_replace(' ', '-', strtolower($title))));
         $post->post_content = $request->input('content') ? urldecode($request->input('content')) : '';
         if ($request->input('date')) {
-            $post->post_date =  Carbon::parse($request->input('date'))->tz('-5');
-            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('-5');
-        } else {
-            $post->post_date = $post->post_date_gmt = Carbon::now()->tz('-5');
+            $post->post_date =  Carbon::parse($request->input('date'))->tz('UTC');
+            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('UTC');
         }
         $post->save();
 
