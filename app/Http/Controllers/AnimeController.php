@@ -26,6 +26,8 @@ class AnimeController extends Controller
         if ($request->input('date')) {
             $post->post_date =  Carbon::parse($request->input('date'))->tz('UTC');
             $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('UTC');
+        } else {
+            $post->post_date = $post->post_date_gmt = Carbon::now()->tz('UTC');
         }
         $post->save();
 
