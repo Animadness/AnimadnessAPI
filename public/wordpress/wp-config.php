@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../vendor/autoload.php');
-if (!class_exists('Dotenv')) {
+if (!class_exists('Dotenv\Dotenv')) {
 	(new \Dotenv\Dotenv(__DIR__.'/../../'))->load();
 }
 
