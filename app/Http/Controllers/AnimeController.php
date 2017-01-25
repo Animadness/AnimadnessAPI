@@ -10,6 +10,8 @@ use File;
 use App\TermRelation as TermRelation;
 use Carbon\Carbon;
 
+require(__DIR__.'/wordpress/wp-admin/includes/image.php');
+
 class AnimeController extends Controller
 {
 
