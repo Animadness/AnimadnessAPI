@@ -26,10 +26,10 @@ class AnimeController extends Controller
         $post->post_content = $request->input('content') ? urldecode($request->input('content')) : '';
         if ($request->input('date') && Carbon::now()->lt(Carbon::parse($request->input('date')))) {
             $post->post_date =  Carbon::parse($request->input('date'));
-            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('+6');
+            $post->post_date_gmt = Carbon::parse($request->input('date'))->tz('+3');
         } else {
             $post->post_date = Carbon::now()->addMinutes(5);
-            $post->post_date_gmt = Carbon::now()->tz('+6')->addMinutes(5);
+            $post->post_date_gmt = Carbon::now()->tz('+3')->addMinutes(5);
         }
         $post->save();
 
