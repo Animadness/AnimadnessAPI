@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $url = env('APP_URL').'/wordpress/wp-cron.php';
-        $schedule->command('WordpressCron')->everyFiveMinutes()->pingBefore($url);
+        $schedule->command('wordpress:cron')->everyFiveMinutes();
     }
 
     /**

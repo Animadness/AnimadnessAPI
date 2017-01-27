@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Anime as Anime;
 use App\Post as Post;
 use App\PostMeta as PostMeta;
 use Twitter;
@@ -79,7 +80,7 @@ class AnimeController extends Controller
 
         // Format Social Posts
         $snapPost = [
-            "do" => 1,
+            "do" => env('APP_ENV') === 'local' ? 0 : 1,
             "msgFormat" => "%TITLE%\r%SURL%\r\n\r\n%FULLTEXT%",
             "postType" => "I",
             "isAutoImg" => "A",
@@ -90,7 +91,7 @@ class AnimeController extends Controller
 
         // Set Facebook Social Post
         $facebookPost = $snapPost;
-        $facebookPost['doFB'] = 1;
+        $facebookPost['doFB'] = env('APP_ENV') === 'local' ? 0 : 1;
         if (!$request->input('blog')) {
             $postMeta = new PostMeta;
             $postMeta->post_id = $post->ID;
@@ -103,7 +104,7 @@ class AnimeController extends Controller
         
         // Set Google Social Post
         $googlePost = $snapPost;
-        $googlePost['doGP'] = 1;
+        $googlePost['doGP'] = env('APP_ENV') === 'local' ? 0 : 1;
         if (!$request->input('blog')) {
             $postMeta = new PostMeta;
             $postMeta->post_id = $post->ID;
@@ -118,7 +119,7 @@ class AnimeController extends Controller
         $twitterPost = $snapPost;
         $twitterPost['msgFormat'] = $request->input('tweet', '%TITLE%') . "\r%SURL%";
         $twitterPost['attchImg'] = 1;
-        $twitterPost['doTW'] = 1;
+        $twitterPost['doTW'] = env('APP_ENV') === 'local' ? 0 : 1;
         if (!$request->input('blog')) {
             $postMeta = new PostMeta;
             $postMeta->post_id = $post->ID;
@@ -176,5 +177,17 @@ class AnimeController extends Controller
 
         // And finally assign featured image to post
         set_post_thumbnail( $post_id, $attach_id );
+    }
+
+    public function viewReviewing(Anime $anime) {
+        return $anime->inReview();
+    }
+
+    public function viewScheduled(Anime $anime) {
+        return $anime->needingApproval();
+    }
+
+    public function approveScheduled(Anime $anime) {
+        return $anime->approveScheduled();
     }
 }

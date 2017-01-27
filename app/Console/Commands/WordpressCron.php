@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Post as Post;
+use App\Anime as Anime;
 
 class WordpressCron extends Command
 {
@@ -11,14 +13,14 @@ class WordpressCron extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'wordpress:cron';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Run the Wordpress CRON and approve any scheduled anime';
 
     /**
      * Create a new command instance.
@@ -35,8 +37,9 @@ class WordpressCron extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(Post $post, Anime $anime)
     {
-        //
+        $post->publishMissed();
+        $anime->approveScheduled();
     }
 }

@@ -26,5 +26,8 @@ Route::group(['prefix' => 'user'], function() {
 });
 
 Route::group(['prefix' => 'anime', 'middleware' => 'cors'], function() {
+    Route::get('review', 'AnimeController@viewReviewing');
+    Route::get('scheduled', 'AnimeController@viewScheduled');
+    Route::get('scheduled/approve', 'AnimeController@approveScheduled');
     Route::post('approve', 'AnimeController@approve');
 });
