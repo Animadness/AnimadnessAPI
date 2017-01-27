@@ -36,7 +36,7 @@ class AnimeApprove extends Command
      *
      * @return mixed
      */
-    public function handle(Post $post, Anime $anime)
+    public function handle(Anime $anime)
     {
         $anime->approveScheduled();
     }
