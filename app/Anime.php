@@ -16,6 +16,9 @@ class Anime {
     public function needingApproval() {
         $data = [];
         $reviewing = json_decode($this->inReview(), true);
+        if (!is_array($reviewing) || count($reviewing) <= 0) {
+            return false;
+        }
         foreach ($reviewing AS $key => $anime) {
             if (isset($anime['post']) && isset($anime['post']['blog']) && isset($anime['post']['date']) && Carbon::now()->gt(Carbon::parse($anime['post']['date']))) {
                 $data[$key] = $anime;
@@ -27,7 +30,13 @@ class Anime {
 
     public function approveScheduled() {
         $data = [];
-        foreach($this->needingApproval() AS $key => $anime) {
+        $reviewing = $this->needingApproval();
+
+        if(!$reviewing) {
+            return false;
+        }
+
+        foreach($reviewing AS $key => $anime) {
             $data[$key] = $anime;
             $this->firebase->set('anime/'.$key, $anime);
             $this->firebase->delete('review/'.$key);
