@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -24,7 +25,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $url = env('APP_URL').'/wordpress/wp-cron.php';
+        define('WP_USE_THEMES', false);
+        require public_path().'/wordpress/wp-blog-header.php';
+
         $schedule->command('wordpress:cron')->everyFiveMinutes();
     }
 
