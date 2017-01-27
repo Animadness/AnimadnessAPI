@@ -5,7 +5,6 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-
 class Kernel extends ConsoleKernel
 {
     /**
@@ -14,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\WordpressCron::class
+        \App\Console\Commands\AnimeApprove::class
     ];
 
     /**
@@ -25,10 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        define('WP_USE_THEMES', false);
-        require public_path().'/wordpress/wp-blog-header.php';
-
-        $schedule->command('wordpress:cron')->everyFiveMinutes();
+        $url = env('APP_URL').'/v1/post/publisher/cron';
+        $schedule->command('anime:approve')->everyFiveMinutes()->pingBefore($url);
     }
 
     /**

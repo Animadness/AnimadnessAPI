@@ -38,4 +38,8 @@ class PostController extends Controller
         $data = maybe_unserialize(get_post_meta($id, $key, true));
         return $data;
     }
+
+    public function publishMissed(Post $post) {
+        return $post->publishMissed();
+    }
 }

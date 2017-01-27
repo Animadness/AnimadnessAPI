@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5a2417b1ff7d33b536271755022ef16f",
-    "content-hash": "fea99589431da615586abeec2d9668d6",
+    "hash": "7543487b648230d0c041e367196c1124",
+    "content-hash": "d2a4a858b495a248ae5b07c41721d634",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -1351,55 +1351,6 @@
                 "uuid"
             ],
             "time": "2016-11-22 19:21:44"
-        },
-        {
-            "name": "stichoza/google-translate-php",
-            "version": "v3.2.12",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Stichoza/google-translate-php.git",
-                "reference": "a029d8b93b201ddfeba60375837d27c6fcb00376"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Stichoza/google-translate-php/zipball/a029d8b93b201ddfeba60375837d27c6fcb00376",
-                "reference": "a029d8b93b201ddfeba60375837d27c6fcb00376",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "~6.0",
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Stichoza\\GoogleTranslate\\": "src/"
-                },
-                "psr-4": {
-                    "Stichoza\\GoogleTranslate\\": "src/Stichoza/GoogleTranslate/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Levan Velijanashvili",
-                    "email": "me@stichoza.com"
-                }
-            ],
-            "description": "Free Google Translate API PHP Package",
-            "homepage": "http://github.com/Stichoza/google-translate-php",
-            "keywords": [
-                "google",
-                "php",
-                "translate"
-            ],
-            "time": "2016-09-14 11:42:35"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3699,6 +3650,55 @@
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
             "time": "2016-10-03 07:35:21"
+        },
+        {
+            "name": "stichoza/google-translate-php",
+            "version": "v3.2.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Stichoza/google-translate-php.git",
+                "reference": "a029d8b93b201ddfeba60375837d27c6fcb00376"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Stichoza/google-translate-php/zipball/a029d8b93b201ddfeba60375837d27c6fcb00376",
+                "reference": "a029d8b93b201ddfeba60375837d27c6fcb00376",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Stichoza\\GoogleTranslate\\": "src/"
+                },
+                "psr-4": {
+                    "Stichoza\\GoogleTranslate\\": "src/Stichoza/GoogleTranslate/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Levan Velijanashvili",
+                    "email": "me@stichoza.com"
+                }
+            ],
+            "description": "Free Google Translate API PHP Package",
+            "homepage": "http://github.com/Stichoza/google-translate-php",
+            "keywords": [
+                "google",
+                "php",
+                "translate"
+            ],
+            "time": "2016-09-14 11:42:35"
         },
         {
             "name": "symfony/css-selector",

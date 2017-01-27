@@ -19,6 +19,7 @@ Route::group(['prefix' => 'post', 'middleware' => 'cors'], function() {
     Route::post('/', 'PostController@addNewPost');
     Route::get('term/relationships', 'PostController@termRelationships');
     Route::get('{id}/meta/{key}', 'PostController@viewMeta');
+    Route::get('publisher/cron', 'PostController@publishMissed');
 });
 
 Route::group(['prefix' => 'user'], function() {
