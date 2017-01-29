@@ -81,7 +81,7 @@ class AnimeController extends Controller
         // Format Social Posts
         $snapPost = [
             "do" => env('APP_ENV') === 'local' ? 0 : 1,
-            "msgFormat" => "%TITLE%\r%SURL%\r\n\r\n%FULLTEXT%",
+            "msgFormat" => "%TITLE%\r\n%SURL%\r\n\r\n%FULLTEXT%",
             "postType" => "I",
             "isAutoImg" => "A",
             "imgToUse" => "",
